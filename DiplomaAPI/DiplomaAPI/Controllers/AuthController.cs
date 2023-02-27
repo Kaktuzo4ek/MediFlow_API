@@ -10,13 +10,13 @@ namespace DiplomaAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private IUserService _userService;
+        private IAuthService _userService;
         private IMailService _mailService;
         private IConfiguration _configuration;
 
-        public AuthController(IUserService userService, IMailService mailService, IConfiguration configuration)
+        public AuthController(IAuthService AuthService, IMailService mailService, IConfiguration configuration)
         {
-            _userService = userService;
+            _userService = AuthService;
             _mailService = mailService;
             _configuration = configuration;
         }
@@ -51,6 +51,25 @@ namespace DiplomaAPI.Controllers
                 {
                     await _mailService.SendEmailAsync(model.Email, "New login", "<h1>Hey! New login to your accont noticed</h1>" +
                         "<p>New login to your accont at " + DateTime.Now + "</p");
+                    return Ok(result);
+                }
+
+                return BadRequest(result);
+            }
+
+            return BadRequest("Some properties aren't valid");
+        }
+
+        // api/auth/CheckEmail
+        [HttpPost("CheckEmail")]
+        public async Task<IActionResult> CheckEmailAsync([FromBody] CheckEmailViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _userService.CheckEmailAsync(model);
+
+                if (result.IsSuccess)
+                {
                     return Ok(result);
                 }
 

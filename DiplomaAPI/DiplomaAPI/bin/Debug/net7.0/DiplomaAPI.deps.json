@@ -8,7 +8,9 @@
     ".NETCoreApp,Version=v7.0": {
       "DiplomaAPI/1.0.0": {
         "dependencies": {
+          "Microsoft.AspNet.Identity.Core": "2.2.3",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "7.0.2",
+          "Microsoft.AspNetCore.Authentication.OpenIdConnect": "7.0.3",
           "Microsoft.AspNetCore.Identity": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "7.0.2",
           "Microsoft.AspNetCore.OpenApi": "7.0.2",
@@ -65,6 +67,14 @@
           }
         }
       },
+      "Microsoft.AspNet.Identity.Core/2.2.3": {
+        "runtime": {
+          "lib/net45/Microsoft.AspNet.Identity.Core.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.2.3.11125"
+          }
+        }
+      },
       "Microsoft.AspNetCore.Authentication/2.2.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.Core": "2.2.0",
@@ -103,6 +113,17 @@
           "lib/net7.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll": {
             "assemblyVersion": "7.0.2.0",
             "fileVersion": "7.0.222.60606"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Authentication.OpenIdConnect/7.0.3": {
+        "dependencies": {
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "6.21.0"
+        },
+        "runtime": {
+          "lib/net7.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll": {
+            "assemblyVersion": "7.0.3.0",
+            "fileVersion": "7.0.323.8009"
           }
         }
       },
@@ -940,6 +961,13 @@
       "path": "humanizer.core/2.14.1",
       "hashPath": "humanizer.core.2.14.1.nupkg.sha512"
     },
+    "Microsoft.AspNet.Identity.Core/2.2.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Mv5FpoaxspE8hlWLE4r1IdZtovg/OyFgVRhxQbx47J4sqdLImN1hnM1lnwCj+/wLmqtqFk/RYMoZ5GAcwm/00g==",
+      "path": "microsoft.aspnet.identity.core/2.2.3",
+      "hashPath": "microsoft.aspnet.identity.core.2.2.3.nupkg.sha512"
+    },
     "Microsoft.AspNetCore.Authentication/2.2.0": {
       "type": "package",
       "serviceable": true,
@@ -974,6 +1002,13 @@
       "sha512": "sha512-sErKh1ZM3Ye1Lib8aWjexf1M5Ne0wptmR8Rr2p/7w1bXyi0kSHnYsVjdEsZGKHE12wNu+g3Zu6TLsKAVEyGYNw==",
       "path": "microsoft.aspnetcore.authentication.jwtbearer/7.0.2",
       "hashPath": "microsoft.aspnetcore.authentication.jwtbearer.7.0.2.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Authentication.OpenIdConnect/7.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-JTb1AR4VjndP9XP3z/KK8H5QWwLf2ESKtOEbGJLeEQNkHCQEJax5JqOp6b+UbropQLXEJ1hJpSUlquBY7zRTeQ==",
+      "path": "microsoft.aspnetcore.authentication.openidconnect/7.0.3",
+      "hashPath": "microsoft.aspnetcore.authentication.openidconnect.7.0.3.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Cryptography.Internal/7.0.2": {
       "type": "package",

@@ -1,4 +1,5 @@
-﻿using DiplomaAPI.ViewModels;
+﻿using DiplomaAPI.Models;
+using DiplomaAPI.ViewModels;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -10,19 +11,22 @@ using System.Security.Claims;
 using System.Text;
 using static System.Net.WebRequestMethods;
 
+
 namespace DiplomaAPI.Services
 {
-    public class UserService : IUserService
+    public class AuthService : IAuthService
     {
-        private UserManager<IdentityUser> _userManager;
+        private UserManager<Employee> _userManager;
         private IConfiguration _configuration;
         private IMailService _mailService;
+        private ITokenService _tokenService;
 
-        public UserService(UserManager<IdentityUser> userManager, IConfiguration configuration, IMailService mailService)
+        public AuthService(UserManager<Employee> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService)
         {
             _userManager = userManager;
             _configuration = configuration;
             _mailService = mailService;
+            _tokenService = tokenService;
         }
 
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
@@ -37,14 +41,24 @@ namespace DiplomaAPI.Services
                     IsSuccess = false,
                 };
 
-            var identityUser = new IdentityUser
+            var identityUser = new Employee
             {
                 Email = model.Email,
                 UserName = model.Email,
-
+                InstitutionId = model.InstitutionId,
+                DepartmentId = model.DepartmentId,
+                Surname = model.Surname,
+                Name = model.Name,
+                Patronymic = model.Patronymic,
+                PhoneNumber = model.PhoneNumber,
+                DateOfBirth = model.DateOfBirth.Date,
+                PositionId = model.PositionId,
+                Gender = model.Gender
             };
 
+            
             var result = await _userManager.CreateAsync(identityUser, model.Password);
+
 
             if (result.Succeeded)
             {
@@ -76,13 +90,24 @@ namespace DiplomaAPI.Services
 
         public async Task<UserManagerResponse> LoginUserAsync(LoginViewModel model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
+             Employee user = null;
+
+             user = await _userManager.FindByEmailAsync(model.Email);
+
+            if(user.EmailConfirmed == false)
+            {
+                return new UserManagerResponse
+                {
+                    Message = "Confrirm email to login",
+                    IsSuccess = false,
+                };
+            }
 
             if(user == null)
             {
                 return new UserManagerResponse
                 {
-                    Message = "There is no user with that Email adress",
+                    Message = "There is no user with that Email adress" + "     ",
                     IsSuccess = false,
                 };
             }
@@ -96,10 +121,14 @@ namespace DiplomaAPI.Services
                     IsSuccess = false,
                 };
 
-            var claims = new[]
+            var token = _tokenService.BuildToken(_configuration["AuthSettings:Key"], _configuration["AuthSettings:Issuer"], user);
+
+            var tokenAsString = new JwtSecurityTokenHandler() { MapInboundClaims = false }.WriteToken(token);
+
+            /*var claims = new[]
             {
-                new Claim("Email", model.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                new Claim(ClaimTypes.Name, model.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
@@ -112,13 +141,33 @@ namespace DiplomaAPI.Services
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
                 );
 
-            string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
+            string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);*/
 
             return new UserManagerResponse
             {
                 Message = tokenAsString,
                 IsSuccess = true,
                 ExpireDate= token.ValidTo
+            };
+        }
+
+        public async Task<UserManagerResponse> CheckEmailAsync(CheckEmailViewModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                return new UserManagerResponse
+                {
+                    Message = "There is no user with that Email adress",
+                    IsSuccess = false,
+                };
+            }
+
+            return new UserManagerResponse
+            {
+                Message = model.Email,
+                IsSuccess = true,
             };
         }
 
@@ -165,9 +214,6 @@ namespace DiplomaAPI.Services
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var encodedToken = Encoding.UTF8.GetBytes(token);
             var validToken = WebEncoders.Base64UrlEncode(encodedToken);
-
-            //string url2 = $"{_configuration["AppUrl"]}/api/Auth/ResetPassword?email={email}&token={validToken}";
-            //string url = "http://localhost:3000/resetPassword";
 
             await _mailService.SendEmailAsync(email, "Reset Password", "<h1>Follow the instructions to reset your password</h1>" +
                 $"<p>To reset your password copy token: {validToken}</p>");
