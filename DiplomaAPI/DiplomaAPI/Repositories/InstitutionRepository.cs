@@ -4,6 +4,7 @@ using DiplomaAPI.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Errors.Model;
 
 namespace DiplomaAPI.Repositories
 {
@@ -24,6 +25,10 @@ namespace DiplomaAPI.Repositories
         public Institution getById(int id)
         {
             var institution = _data.Institutions.Find(id);
+            if (institution == null)
+            {
+                throw new NotFoundException();
+            }
             return institution;
         }
     }

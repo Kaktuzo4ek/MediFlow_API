@@ -1,6 +1,7 @@
 ﻿using DiplomaAPI.Models;
 using DiplomaAPI.Repositories;
 using DiplomaAPI.Repositories.Interfaces;
+using DiplomaAPI.ViewModels;
 using DiplomaAPI.ViewModels.Employee;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -56,6 +57,25 @@ namespace DiplomaAPI.Controllers
             {
                 return StatusCode(404);
             }
+        }
+
+        [HttpPost("{depId}")]
+        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployeeFromCertainDepartment(int depId)
+        {
+            try
+            {
+                return _employeeRepository.getEmployeeFromCertainDepartment(depId);
+            }
+            catch (NotFoundException)
+            {
+                return StatusCode(404);
+            }
+        }
+
+        [HttpPost("FilterEmployees")]
+        public ListEmployees FilterEmployees(string filter, string filterBy, int depId)
+        {
+                return _employeeRepository.FilterEmployees(filter, filterBy, depId);
         }
 
         [HttpPut("{id}")]

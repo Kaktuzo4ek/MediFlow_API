@@ -49,8 +49,8 @@ namespace DiplomaAPI.Controllers
 
                 if (result.IsSuccess)
                 {
-                    await _mailService.SendEmailAsync(model.Email, "New login", "<h1>Hey! New login to your accont noticed</h1>" +
-                        "<p>New login to your accont at " + DateTime.Now + "</p");
+                   /* await _mailService.SendEmailAsync(model.Email, "New login", "<h1>Hey! New login to your accont noticed</h1>" +
+                        "<p>New login to your accont at " + DateTime.Now + "</p");*/
                     return Ok(result);
                 }
 

@@ -1,4 +1,6 @@
-﻿namespace DiplomaAPI.ViewModels.Employee
+﻿using DiplomaAPI.Models;
+
+namespace DiplomaAPI.ViewModels.Employee
 {
     public class EmployeeViewModel
     {
@@ -16,9 +18,9 @@
 
         public string PasswordHash { get; set; }
 
-        public int InstitutionId { get; set; }
+        //public int InstitutionId { get; set; }
 
-        public int DepartmentId { get; set; }
+        //public int DepartmentId { get; set; }
 
         public string Surname { get; set; }
 
@@ -30,7 +32,7 @@
 
         public DateTime DateOfBirth { get; set; }
 
-        public int PositionId { get; set; }
+        //public int PositionId { get; set; }
 
         public string Gender { get; set; }
 

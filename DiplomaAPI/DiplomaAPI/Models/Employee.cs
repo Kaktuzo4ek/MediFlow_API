@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DiplomaAPI.Models
 {
@@ -6,9 +7,9 @@ namespace DiplomaAPI.Models
     {
         public override int Id { get; set; }
 
-        public int InstitutionId { get; set; }
+        public Models.Institution Institution { get; set; }
 
-        public int DepartmentId { get; set; }
+        public Models.Department Department { get; set; }
 
         public string Surname { get; set; }
 
@@ -20,10 +21,8 @@ namespace DiplomaAPI.Models
 
         public DateTime DateOfBirth { get; set; }
 
-        public int PositionId { get; set; }
+        public Models.Position Position { get; set; }
 
         public string Gender { get; set; }
-
-        //public Image Image { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DiplomaAPI.Models;
+using DiplomaAPI.Repositories.Interfaces;
 using DiplomaAPI.ViewModels;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -20,13 +21,15 @@ namespace DiplomaAPI.Services
         private IConfiguration _configuration;
         private IMailService _mailService;
         private ITokenService _tokenService;
+        private IEmployeeRepository _employeeRepository;
 
-        public AuthService(UserManager<Employee> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService)
+        public AuthService(UserManager<Employee> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService, IEmployeeRepository employeeRepository)
         {
             _userManager = userManager;
             _configuration = configuration;
             _mailService = mailService;
             _tokenService = tokenService;
+            _employeeRepository = employeeRepository;
         }
 
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
@@ -43,16 +46,17 @@ namespace DiplomaAPI.Services
 
             var identityUser = new Employee
             {
+                Id = _employeeRepository.getEmployeeCount() + 1,
                 Email = model.Email,
                 UserName = model.Email,
-                InstitutionId = model.InstitutionId,
-                DepartmentId = model.DepartmentId,
+                Institution = _employeeRepository.setInstitition(model.InstitutionId),
+                Department = _employeeRepository.setDepartment(model.DepartmentId),
                 Surname = model.Surname,
                 Name = model.Name,
                 Patronymic = model.Patronymic,
                 PhoneNumber = model.PhoneNumber,
                 DateOfBirth = model.DateOfBirth.Date,
-                PositionId = model.PositionId,
+                Position = _employeeRepository.setPosition(model.PositionId),
                 Gender = model.Gender
             };
 
@@ -123,25 +127,7 @@ namespace DiplomaAPI.Services
 
             var token = _tokenService.BuildToken(_configuration["AuthSettings:Key"], _configuration["AuthSettings:Issuer"], user);
 
-            var tokenAsString = new JwtSecurityTokenHandler() { MapInboundClaims = false }.WriteToken(token);
-
-            /*var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, model.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["AuthSettings:Issuer"],
-                audience: _configuration["AuthSettings:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddDays(30),
-                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-                );
-
-            string tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);*/
+            var tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
 
             return new UserManagerResponse
             {
