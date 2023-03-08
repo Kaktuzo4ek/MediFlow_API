@@ -20,21 +20,25 @@ namespace DiplomaAPI.Repositories
 
         public void seedDb()
         {
-            _data.Departments.Add( new Department{ DepartmentId = 1, Name = "Хірургічне відділення"});
+            /*_data.Departments.Add( new Department{ DepartmentId = 1, Name = "Хірургічне відділення"});
             _data.Departments.Add(new Department { DepartmentId = 2, Name = "Приймальне відділення" });
             _data.Departments.Add(new Department { DepartmentId = 3, Name = "Реанімаційне відділення" });
+
             _data.Institutions.Add(new Institution { InstitutionId = 12345678, Name = "КНП \"Заболотівська лікарня\"", Adress = "вул. Заводська 78А" });
             _data.Institutions.Add(new Institution { InstitutionId = 87654321, Name = "КНП \"Івано-Франківська лікарня\"", Adress = "вул. Вернадського 12В" });
             _data.Institutions.Add(new Institution { InstitutionId = 21032002, Name = "КНП \"Львівська лікарня\"", Adress = "вул. Степана Бандери 13А" });
+
             _data.Positions.Add(new Position { PositionId = 1, PositionName = "Хірург" });
             _data.Positions.Add(new Position { PositionId = 2, PositionName = "Анастезіолог" });
             _data.Positions.Add(new Position { PositionId = 3, PositionName = "Рентгенолог" });
+
             _data.institutionsAndDepartments.Add(new InstitutionAndDepartment { InstitutionId = 12345678, DepartmentId = 1 });
             _data.institutionsAndDepartments.Add(new InstitutionAndDepartment { InstitutionId = 12345678, DepartmentId = 2 });
             _data.institutionsAndDepartments.Add(new InstitutionAndDepartment { InstitutionId = 12345678, DepartmentId = 3 });
             _data.institutionsAndDepartments.Add(new InstitutionAndDepartment { InstitutionId = 87654321, DepartmentId = 2 });
             _data.institutionsAndDepartments.Add(new InstitutionAndDepartment { InstitutionId = 87654321, DepartmentId = 3 });
             _data.institutionsAndDepartments.Add(new InstitutionAndDepartment { InstitutionId = 21032002, DepartmentId = 3 });
+
             _data.Employees.Add(
                 new Employee
                 {
@@ -98,6 +102,129 @@ namespace DiplomaAPI.Repositories
                     PasswordHash = _passwordHasher.HashPassword("VictoriaKot210@"),
                 }
                 );
+
+            _data.Patients.Add(
+                    new Patient
+                    {
+                        Surname = "Слободян",
+                        Name = "Ганна",
+                        Patronymic = "Степанівна",
+                        DateOfBirth = new DateTime(1994, 01, 12),
+                        PhoneNumber = "+380686013255",
+                        City = "Тернопіль"
+                    }
+                );
+            _data.Patients.Add(
+                new Patient
+                    {
+                        Surname = "Богайчук",
+                        Name = "Сергій",
+                        Patronymic = "Михайлович",
+                        DateOfBirth = new DateTime(1997, 05, 12),
+                        PhoneNumber = "+380354830549",
+                        City = "Тернопіль"
+                    }
+                );
+            _data.Patients.Add(
+                    new Patient
+                    {
+                        Surname = "Романюк",
+                        Name = "Петро",
+                        Patronymic = "Дмитрович",
+                        DateOfBirth = new DateTime(1960, 01, 04),
+                        PhoneNumber = "+380671943703",
+                        City = "Дрогобич"
+                    }
+                    );
+            _data.Patients.Add(
+                    new Patient
+                    {
+                        Surname = "Голован",
+                        Name = "Галина",
+                        Patronymic = "Анатоліївна",
+                        DateOfBirth = new DateTime(1995, 10, 06),
+                        PhoneNumber = "+380988376146",
+                        City = "Львів"
+                    }
+                    );
+            _data.Patients.Add(
+                    new Patient
+                    {
+                        Surname = "Краховецька",
+                        Name = "Ніла",
+                        Patronymic = "Олександрівна",
+                        DateOfBirth = new DateTime(1969, 08, 27),
+                        PhoneNumber = " +380969586625",
+                        City = "Івано-Франківськ"
+                    }
+                    );*/
+
+            /* _data.Services.Add(new Service { ServiceId = "90762-00", ServiceName = "План лікування за допомогою фармакотерапії, початковий курс" });
+             _data.Services.Add(new Service { ServiceId = "96197-19", ServiceName = "Внутрішньом'язове введення фармакологічного засобу, інший та неуточнений фармакологічний засіб" });
+             _data.Services.Add(new Service { ServiceId = "96199-19", ServiceName = "Внутрішньовенне введення фармакологічного засобу, інший та неуточнений фармакологічний засіб" });
+             _data.Services.Add(new Service { ServiceId = "96072-00", ServiceName = "Консультування або навчання щодо призначених/самостійно обраних лікарських засобів" });
+             _data.Services.Add(new Service { ServiceId = "96202-19", ServiceName = "Ентеральне введення фармакологічного засобу, інший та неуточнений фармакологічний засіб" });
+             _data.Services.Add(new Service { ServiceId = "97083-00", ServiceName = "Томографічний аналіз" });
+             _data.Services.Add(new Service { ServiceId = "96021-00", ServiceName = "Оцінка догляду за собою/самообслуговування" });
+             _data.Services.Add(new Service { ServiceId = "96238-00", ServiceName = "Оцінка когнітивної сфери та/або поведінки" });
+             _data.Services.Add(new Service { ServiceId = "96019-00", ServiceName = "Оцінка біомеханічних функцій" });*/
+
+            _data.Referrals.Add(
+                     new Referral
+                     {
+                         ReferralId = "3399-6655-3752-4344",
+                         Doctor = _data.Employees.Find(1),
+                         Status = "Активне",
+                         ProcessStatus = "Погашений (від 12.10.2022)",
+                         Priority = "Плановий",
+                         Category = _data.ReferralCategories.Find(1),
+                         Service = _data.Services.Find("90762-00"),
+                         Patient = _data.Patients.Find(1),
+                         Validity = DateTime.Now.AddYears(1),
+                     }
+                );
+
+            _data.Referrals.Add(
+                     new Referral
+                     {
+                         ReferralId = "8544-7178-6738-8601",
+                         Doctor = _data.Employees.Find(1),
+                         Status = "Активне",
+                         ProcessStatus = "Погашений (від 13.10.2022)",
+                         Priority = "Плановий",
+                         Category = _data.ReferralCategories.Find(1),
+                         Service = _data.Services.Find("96072-00"),
+                         Patient = _data.Patients.Find(1),
+                         Validity = DateTime.Now.AddYears(1),
+                     }
+                );
+
+            _data.Referrals.Add(
+                     new Referral
+                     {
+                         ReferralId = "4615-6809-1327-8454",
+                         Doctor = _data.Employees.Find(1),
+                         Status = "Активне",
+                         ProcessStatus = "Погашений (від 14.10.2022)",
+                         Priority = "Плановий",
+                         Category = _data.ReferralCategories.Find(1),
+                         Service = _data.Services.Find("97083-00"),
+                         Patient = _data.Patients.Find(1),
+                         Validity = DateTime.Now.AddYears(1),
+                     }
+                );
+
+            /*_data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Консультація" });
+            _data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Лікувально-діагностична процедура"});
+            _data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Діагностична процедура" });
+            _data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Госпіталізація" });
+            _data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Візуалізація" });
+            _data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Лабораторна діагностика" });
+            _data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Нестаціонарна паліативна допомога" });
+            _data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Процедура" });
+            _data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Нестаціонарна медична реабілітація" });
+            _data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Хірургічна процедура" });
+            _data.ReferralCategories.Add(new ReferralCategory { CategoryName = "Переведення до іншого ЗОЗ" });*/
 
             _data.SaveChanges();
         }

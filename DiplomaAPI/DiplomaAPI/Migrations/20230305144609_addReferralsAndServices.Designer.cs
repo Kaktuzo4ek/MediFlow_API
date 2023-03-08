@@ -4,6 +4,7 @@ using DiplomaAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiplomaAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230305144609_addReferralsAndServices")]
+    partial class addReferralsAndServices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,11 +237,9 @@ namespace DiplomaAPI.Migrations
                     b.Property<string>("ReferralId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
@@ -266,8 +267,6 @@ namespace DiplomaAPI.Migrations
 
                     b.HasKey("ReferralId");
 
-                    b.HasIndex("CategoryId");
-
                     b.HasIndex("DoctorId");
 
                     b.HasIndex("PatientId");
@@ -275,23 +274,6 @@ namespace DiplomaAPI.Migrations
                     b.HasIndex("ServiceId");
 
                     b.ToTable("Referrals");
-                });
-
-            modelBuilder.Entity("DiplomaAPI.Models.ReferralCategory", b =>
-                {
-                    b.Property<int>("CategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CategoryId"));
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CategoryId");
-
-                    b.ToTable("ReferralCategories");
                 });
 
             modelBuilder.Entity("DiplomaAPI.Models.Service", b =>
@@ -470,12 +452,6 @@ namespace DiplomaAPI.Migrations
 
             modelBuilder.Entity("DiplomaAPI.Models.Referral", b =>
                 {
-                    b.HasOne("DiplomaAPI.Models.ReferralCategory", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DiplomaAPI.Models.Employee", "Doctor")
                         .WithMany()
                         .HasForeignKey("DoctorId")
@@ -491,8 +467,6 @@ namespace DiplomaAPI.Migrations
                     b.HasOne("DiplomaAPI.Models.Service", "Service")
                         .WithMany()
                         .HasForeignKey("ServiceId");
-
-                    b.Navigation("Category");
 
                     b.Navigation("Doctor");
 

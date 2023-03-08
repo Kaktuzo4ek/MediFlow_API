@@ -36,5 +36,13 @@ namespace DiplomaAPI.Data
         public DbSet<Position> Positions { get; set; }
 
         public DbSet<InstitutionAndDepartment> institutionsAndDepartments { get; set; }
+
+        public DbSet<Patient> Patients { get; set; }
+
+        public DbSet<Referral> Referrals { get; set; }
+
+        public DbSet<ReferralCategory> ReferralCategories { get; set; }
+
+        public DbSet<Service> Services { get; set; }
     }
 }
