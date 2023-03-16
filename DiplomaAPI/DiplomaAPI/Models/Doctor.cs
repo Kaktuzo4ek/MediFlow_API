@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DiplomaAPI.Models
 {
-    public class Employee : IdentityUser<int>
+    public class Doctor : IdentityUser<int>
     {
         public override int Id { get; set; }
 

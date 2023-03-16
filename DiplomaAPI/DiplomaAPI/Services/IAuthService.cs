@@ -17,8 +17,5 @@ namespace DiplomaAPI.Services
         Task<UserManagerResponse> ForgetPasswordAsync(string email);
 
         Task<UserManagerResponse> ResetPasswordAsync(ResetPasswordViewModel model);
-
-
     }
-
 }

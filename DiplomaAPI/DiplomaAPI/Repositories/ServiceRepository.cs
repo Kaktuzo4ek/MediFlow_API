@@ -15,12 +15,17 @@ namespace DiplomaAPI.Repositories
         public List<Service> getAll()
         {
             var services = _data.Services.ToList();
+            services.ForEach(service =>
+            {
+                _data.Entry(service).Reference("Category").Load();
+            });
             return services;
         }
 
         public Service getById(string id)
         {
             var service = _data.Services.Find(id);
+            _data.Entry(service).Reference("Category").Load();
             return service;
         }
     }

@@ -12,14 +12,14 @@ namespace DiplomaAPI.Services
     {
         private const double EXPIRY_DURATION_MINUTES = 30;
 
-        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDoctorRepository _doctorRepository;
 
-        public TokenService(IEmployeeRepository employeeRepository)
+        public TokenService(IDoctorRepository doctorRepository)
         {
-            _employeeRepository = employeeRepository;
+            _doctorRepository = doctorRepository;
         }
 
-        public JwtSecurityToken BuildToken(string key, string issuer, Employee user)
+        public JwtSecurityToken BuildToken(string key, string issuer, Doctor user)
         {
             var claims = new[] {
                 new Claim(ClaimTypes.Name, user.Id.ToString()),

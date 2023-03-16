@@ -5,14 +5,12 @@ namespace DiplomaAPI.Repositories.Interfaces
 {
     public interface IReferralRepository
     {
-        public List<Referral> getAll(int patientId);
+        public List<Referral> getAll();
 
-        public Referral getById(string id);
+        public Referral getById(int id);
 
         public ReferralViewModel Update(UpdateReferralViewModel data);
 
-        public ReferralViewModel Create(CreateReferralViewModel data);
-
-        public ReferralViewModel Delete(string referralId);
+        public ReferralViewModel Delete(int referralId, string referralPackageId);
     }
 }

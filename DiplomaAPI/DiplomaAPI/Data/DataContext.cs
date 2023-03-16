@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace DiplomaAPI.Data
 {
-    public class DataContext : IdentityDbContext<Employee, IdentityRole<int>, int>
+    public class DataContext : IdentityDbContext<Doctor, IdentityRole<int>, int>
     {
         public DataContext(DbContextOptions options) : base(options)
         {
@@ -22,12 +22,12 @@ namespace DiplomaAPI.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Employee>().ToTable("Employees");
+            modelBuilder.Entity<Doctor>().ToTable("Doctors");
 
             modelBuilder.Entity<InstitutionAndDepartment>().HasKey(key => new { key.InstitutionId, key.DepartmentId });
         }
 
-        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
 
         public DbSet<Institution> Institutions { get; set; }
 
@@ -35,14 +35,18 @@ namespace DiplomaAPI.Data
 
         public DbSet<Position> Positions { get; set; }
 
-        public DbSet<InstitutionAndDepartment> institutionsAndDepartments { get; set; }
+        public DbSet<InstitutionAndDepartment> InstitutionsAndDepartments { get; set; }
 
         public DbSet<Patient> Patients { get; set; }
 
+        public DbSet<ReferralPackage> ReferralPackages { get; set; }
+
         public DbSet<Referral> Referrals { get; set; }
 
-        public DbSet<ReferralCategory> ReferralCategories { get; set; }
+        public DbSet<ServiceCategory> ServiceCategories { get; set; }
 
         public DbSet<Service> Services { get; set; }
+
+        public DbSet<Procedure> Procedures { get; set; }
     }
 }

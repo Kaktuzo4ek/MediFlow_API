@@ -17,19 +17,19 @@ namespace DiplomaAPI.Services
 {
     public class AuthService : IAuthService
     {
-        private UserManager<Employee> _userManager;
+        private UserManager<Doctor> _userManager;
         private IConfiguration _configuration;
         private IMailService _mailService;
         private ITokenService _tokenService;
-        private IEmployeeRepository _employeeRepository;
+        private IDoctorRepository _doctorRepository;
 
-        public AuthService(UserManager<Employee> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService, IEmployeeRepository employeeRepository)
+        public AuthService(UserManager<Doctor> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService, IDoctorRepository doctorRepository)
         {
             _userManager = userManager;
             _configuration = configuration;
             _mailService = mailService;
             _tokenService = tokenService;
-            _employeeRepository = employeeRepository;
+            _doctorRepository = doctorRepository;
         }
 
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
@@ -44,19 +44,18 @@ namespace DiplomaAPI.Services
                     IsSuccess = false,
                 };
 
-            var identityUser = new Employee
+            var identityUser = new Doctor
             {
-                Id = _employeeRepository.getEmployeeCount() + 1,
                 Email = model.Email,
                 UserName = model.Email,
-                Institution = _employeeRepository.setInstitition(model.InstitutionId),
-                Department = _employeeRepository.setDepartment(model.DepartmentId),
+                Institution = _doctorRepository.setInstitition(model.InstitutionId),
+                Department = _doctorRepository.setDepartment(model.DepartmentId),
                 Surname = model.Surname,
                 Name = model.Name,
                 Patronymic = model.Patronymic,
                 PhoneNumber = model.PhoneNumber,
                 DateOfBirth = model.DateOfBirth.Date,
-                Position = _employeeRepository.setPosition(model.PositionId),
+                Position = _doctorRepository.setPosition(model.PositionId),
                 Gender = model.Gender
             };
 
@@ -94,7 +93,7 @@ namespace DiplomaAPI.Services
 
         public async Task<UserManagerResponse> LoginUserAsync(LoginViewModel model)
         {
-             Employee user = null;
+             Doctor user = null;
 
              user = await _userManager.FindByEmailAsync(model.Email);
 

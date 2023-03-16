@@ -1,6 +1,6 @@
-﻿namespace DiplomaAPI.Models
+﻿namespace DiplomaAPI.ViewModels.Procedure
 {
-    public class Procedure
+    public class ProcedureViewModel
     {
         public int ProcedureId { get; set; }
 
@@ -15,5 +15,6 @@
         public DateTime EventDate { get; set; }
 
         public DateTime DateCreated { get; set; }
+
     }
 }

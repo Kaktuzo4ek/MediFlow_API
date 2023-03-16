@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DiplomaAPI.ViewModels.Employee
 {
-    public class UpdateEmployeeViewModel
+    public class UpdateDoctorViewModel
     {
         [AllowNull]
         public int? Id { get; set; }

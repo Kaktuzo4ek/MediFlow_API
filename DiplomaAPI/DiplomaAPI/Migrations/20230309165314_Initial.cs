@@ -30,7 +30,8 @@ namespace DiplomaAPI.Migrations
                 name: "Departments",
                 columns: table => new
                 {
-                    DepartmentId = table.Column<int>(type: "int", nullable: false),
+                    DepartmentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -52,27 +53,47 @@ namespace DiplomaAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "institutionsAndDepartments",
+                name: "Patients",
                 columns: table => new
                 {
-                    InstitutionId = table.Column<int>(type: "int", nullable: false),
-                    DepartmentId = table.Column<int>(type: "int", nullable: false)
+                    PatientId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Patronymic = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_institutionsAndDepartments", x => new { x.InstitutionId, x.DepartmentId });
+                    table.PrimaryKey("PK_Patients", x => x.PatientId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Positions",
                 columns: table => new
                 {
-                    PositionId = table.Column<int>(type: "int", nullable: false),
+                    PositionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     PositionName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Positions", x => x.PositionId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServiceCategories",
+                columns: table => new
+                {
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServiceCategories", x => x.CategoryId);
                 });
 
             migrationBuilder.CreateTable(
@@ -97,10 +118,35 @@ namespace DiplomaAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employees",
+                name: "InstitutionsAndDepartments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    InstitutionId = table.Column<int>(type: "int", nullable: false),
+                    DepartmentId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InstitutionsAndDepartments", x => new { x.InstitutionId, x.DepartmentId });
+                    table.ForeignKey(
+                        name: "FK_InstitutionsAndDepartments_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
+                        principalColumn: "DepartmentId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InstitutionsAndDepartments_Institutions_InstitutionId",
+                        column: x => x.InstitutionId,
+                        principalTable: "Institutions",
+                        principalColumn: "InstitutionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Doctors",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     InstitutionId = table.Column<int>(type: "int", nullable: false),
                     DepartmentId = table.Column<int>(type: "int", nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -126,24 +172,43 @@ namespace DiplomaAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Employees", x => x.Id);
+                    table.PrimaryKey("PK_Doctors", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Employees_Departments_DepartmentId",
+                        name: "FK_Doctors_Departments_DepartmentId",
                         column: x => x.DepartmentId,
                         principalTable: "Departments",
                         principalColumn: "DepartmentId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Employees_Institutions_InstitutionId",
+                        name: "FK_Doctors_Institutions_InstitutionId",
                         column: x => x.InstitutionId,
                         principalTable: "Institutions",
                         principalColumn: "InstitutionId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Employees_Positions_PositionId",
+                        name: "FK_Doctors_Positions_PositionId",
                         column: x => x.PositionId,
                         principalTable: "Positions",
                         principalColumn: "PositionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Services",
+                columns: table => new
+                {
+                    ServiceId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ServiceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Services", x => x.ServiceId);
+                    table.ForeignKey(
+                        name: "FK_Services_ServiceCategories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "ServiceCategories",
+                        principalColumn: "CategoryId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -161,9 +226,9 @@ namespace DiplomaAPI.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUserClaims_Employees_UserId",
+                        name: "FK_AspNetUserClaims_Doctors_UserId",
                         column: x => x.UserId,
-                        principalTable: "Employees",
+                        principalTable: "Doctors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -181,9 +246,9 @@ namespace DiplomaAPI.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_AspNetUserLogins_Employees_UserId",
+                        name: "FK_AspNetUserLogins_Doctors_UserId",
                         column: x => x.UserId,
-                        principalTable: "Employees",
+                        principalTable: "Doctors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -205,9 +270,9 @@ namespace DiplomaAPI.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AspNetUserRoles_Employees_UserId",
+                        name: "FK_AspNetUserRoles_Doctors_UserId",
                         column: x => x.UserId,
-                        principalTable: "Employees",
+                        principalTable: "Doctors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -225,11 +290,103 @@ namespace DiplomaAPI.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
-                        name: "FK_AspNetUserTokens_Employees_UserId",
+                        name: "FK_AspNetUserTokens_Doctors_UserId",
                         column: x => x.UserId,
-                        principalTable: "Employees",
+                        principalTable: "Doctors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReferralPackages",
+                columns: table => new
+                {
+                    ReferralPackageId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DoctorId = table.Column<int>(type: "int", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Validity = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReferralPackages", x => x.ReferralPackageId);
+                    table.ForeignKey(
+                        name: "FK_ReferralPackages_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ReferralPackages_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "PatientId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Referrals",
+                columns: table => new
+                {
+                    ReferralId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReferralPackageId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Priority = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProcessStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ServiceId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Referrals", x => x.ReferralId);
+                    table.ForeignKey(
+                        name: "FK_Referrals_ReferralPackages_ReferralPackageId",
+                        column: x => x.ReferralPackageId,
+                        principalTable: "ReferralPackages",
+                        principalColumn: "ReferralPackageId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Referrals_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "ServiceId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Procedures",
+                columns: table => new
+                {
+                    ProcedureId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReferralId = table.Column<int>(type: "int", nullable: false),
+                    DoctorId = table.Column<int>(type: "int", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EventDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Procedures", x => x.ProcedureId);
+                    table.ForeignKey(
+                        name: "FK_Procedures_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Procedures_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "PatientId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Procedures_Referrals_ReferralId",
+                        column: x => x.ReferralId,
+                        principalTable: "Referrals",
+                        principalColumn: "ReferralId",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(
@@ -261,30 +418,75 @@ namespace DiplomaAPI.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
-                table: "Employees",
+                table: "Doctors",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employees_DepartmentId",
-                table: "Employees",
+                name: "IX_Doctors_DepartmentId",
+                table: "Doctors",
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employees_InstitutionId",
-                table: "Employees",
+                name: "IX_Doctors_InstitutionId",
+                table: "Doctors",
                 column: "InstitutionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Employees_PositionId",
-                table: "Employees",
+                name: "IX_Doctors_PositionId",
+                table: "Doctors",
                 column: "PositionId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
-                table: "Employees",
+                table: "Doctors",
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InstitutionsAndDepartments_DepartmentId",
+                table: "InstitutionsAndDepartments",
+                column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Procedures_DoctorId",
+                table: "Procedures",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Procedures_PatientId",
+                table: "Procedures",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Procedures_ReferralId",
+                table: "Procedures",
+                column: "ReferralId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReferralPackages_DoctorId",
+                table: "ReferralPackages",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReferralPackages_PatientId",
+                table: "ReferralPackages",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Referrals_ReferralPackageId",
+                table: "Referrals",
+                column: "ReferralPackageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Referrals_ServiceId",
+                table: "Referrals",
+                column: "ServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Services_CategoryId",
+                table: "Services",
+                column: "CategoryId");
         }
 
         /// <inheritdoc />
@@ -306,13 +508,31 @@ namespace DiplomaAPI.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "institutionsAndDepartments");
+                name: "InstitutionsAndDepartments");
+
+            migrationBuilder.DropTable(
+                name: "Procedures");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Employees");
+                name: "Referrals");
+
+            migrationBuilder.DropTable(
+                name: "ReferralPackages");
+
+            migrationBuilder.DropTable(
+                name: "Services");
+
+            migrationBuilder.DropTable(
+                name: "Doctors");
+
+            migrationBuilder.DropTable(
+                name: "Patients");
+
+            migrationBuilder.DropTable(
+                name: "ServiceCategories");
 
             migrationBuilder.DropTable(
                 name: "Departments");

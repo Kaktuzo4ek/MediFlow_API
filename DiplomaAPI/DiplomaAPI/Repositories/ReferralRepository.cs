@@ -1,12 +1,9 @@
 ﻿using DiplomaAPI.Data;
 using DiplomaAPI.Models;
 using DiplomaAPI.Repositories.Interfaces;
-using DiplomaAPI.ViewModels.Employee;
 using DiplomaAPI.ViewModels.Referral;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+using DiplomaAPI.ViewModels.ReferralPackage;
 using SendGrid.Helpers.Errors.Model;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DiplomaAPI.Repositories
 {
@@ -18,27 +15,23 @@ namespace DiplomaAPI.Repositories
             _data = data;
         }
 
-        public List<Referral> getAll(int patientId)
+        public List<Referral> getAll()
         {
-            var referrals = _data.Referrals.Where(x => x.Patient.PatientId == patientId).ToList();
-            referrals.ForEach(e =>
+            var referrals = _data.Referrals.ToList();
+            referrals.ForEach(r =>
             {
-                _data.Entry(e).Reference("Doctor").Load();
-                _data.Entry(e).Reference("Service").Load();
-                _data.Entry(e).Reference("Patient").Load();
-                _data.Entry(e).Reference("Category").Load();
+                _data.Entry(r).Reference("Service").Load();
+                _data.Entry(r.Service).Reference("Category").Load();
             });
             return referrals;
         }
 
-        public Referral getById(string id)
+        public Referral getById(int id)
         {
-            var referal = _data.Referrals.Find(id);
-            _data.Entry(referal).Reference("Doctor").Load();
-            _data.Entry(referal).Reference("Service").Load();
-            _data.Entry(referal).Reference("Patient").Load();
-            _data.Entry(referal).Reference("Category").Load();
-            return referal;
+            var referral = _data.Referrals.Find(id);
+            _data.Entry(referral).Reference("Service").Load();
+            _data.Entry(referral.Service).Reference("Category").Load();
+            return referral;
         }
 
         public ReferralViewModel Update(UpdateReferralViewModel data)
@@ -50,24 +43,14 @@ namespace DiplomaAPI.Repositories
                 throw new NotFoundException();
             }
 
-            _data.Entry(referral).Reference("Doctor").Load();
-            _data.Entry(referral).Reference("Service").Load();
-            _data.Entry(referral).Reference("Patient").Load();
-            _data.Entry(referral).Reference("Category").Load();
-
-            if (data.CategoryId != 0)
+            if (data.Priority != "")
             {
-                referral.Category = _data.ReferralCategories.Find(data.CategoryId);
+                referral.Priority = data.Priority;
             }
 
             if (data.ServiceId != "")
             {
                 referral.Service = _data.Services.Find(data.ServiceId);
-            }
-
-            if (data.Priority != "")
-            {
-                referral.Priority = data.Priority;
             }
 
             _data.Update(referral);
@@ -77,34 +60,7 @@ namespace DiplomaAPI.Repositories
             return PrepareResponse(referral);
         }
 
-        public ReferralViewModel Create(CreateReferralViewModel data)
-        {
-            if (_data.Referrals.Find(data.ReferralId) != null || data.ReferralId == "")
-            {
-                throw new NotFoundException();
-            }
-
-            var referral = new Referral
-            {
-                ReferralId = data.ReferralId,
-                Doctor = _data.Employees.Find(data.DoctorId),
-                Status = "Активне",
-                ProcessStatus = "В роботі",
-                Priority = data.Priority,
-                Category = _data.ReferralCategories.Find(data.CategoryId),
-                Service = _data.Services.Find(data.ServiceId),
-                Patient = _data.Patients.Find(data.PatientId),
-                Date = DateTime.Now,
-                Validity = DateTime.Now.AddYears(1),
-            };
-
-            _data.Referrals.Add(referral);
-            _data.SaveChanges();
-
-            return PrepareResponse(referral);
-        }
-
-        public ReferralViewModel Delete(string referralId)
+        public ReferralViewModel Delete(int referralId, string referralPackageId)
         {
             var referral = _data.Referrals.Find(referralId);
 
@@ -116,24 +72,40 @@ namespace DiplomaAPI.Repositories
             _data.Referrals.Remove(referral);
             _data.SaveChanges();
 
-            return PrepareResponse(referral);
+            if(_data.Referrals.Where(x => x.ReferralPackageId == referralPackageId).Count() == 0)
+            {
+                var referralPackage = _data.ReferralPackages.Find(referralPackageId);
+                _data.ReferralPackages.Remove(referralPackage);
+                _data.SaveChanges();
+            }
 
+            return PrepareResponseDelete(referral);
         }
 
         private ReferralViewModel PrepareResponse(Referral referral)
         {
+            _data.Entry(referral.Service).Reference("Category").Load();
+            return new ReferralViewModel
+            {
+               ReferralId = referral.ReferralId,
+               ReferralPackageId = referral.ReferralPackageId,
+               Status = referral.Status,
+               Priority = referral.Priority,
+               ProcessStatus = referral.ProcessStatus,
+               Service = referral.Service,
+            };
+        }
+
+        private ReferralViewModel PrepareResponseDelete(Referral referral)
+        {
             return new ReferralViewModel
             {
                 ReferralId = referral.ReferralId,
-                Doctor = referral.Doctor,
+                ReferralPackageId = referral.ReferralPackageId,
                 Status = referral.Status,
-                ProcessStatus = referral.ProcessStatus,
                 Priority = referral.Priority,
-                Category = referral.Category,
+                ProcessStatus = referral.ProcessStatus,
                 Service = referral.Service,
-                Patient = referral.Patient,
-                Date = referral.Date,
-                Validity = referral.Validity,
             };
         }
     }

@@ -2,7 +2,7 @@
 
 namespace DiplomaAPI.Models
 {
-    public class ReferralCategory
+    public class ServiceCategory
     {
         [Key]
         public int CategoryId { get; set; }

@@ -2,7 +2,7 @@
 
 namespace DiplomaAPI.ViewModels.Employee
 {
-    public class FilterEmployeeViewModel
+    public class FilterDoctorViewModel
     {
         [AllowNull]
         public int? Id { get; set; }

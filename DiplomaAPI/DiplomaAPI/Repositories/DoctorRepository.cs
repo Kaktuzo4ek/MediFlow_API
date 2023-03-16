@@ -9,12 +9,12 @@ using System.Web;
 
 namespace DiplomaAPI.Repositories
 {
-    public class EmployeeRepository : IEmployeeRepository
+    public class DoctorRepository : IDoctorRepository
     {
         private DataContext _data;
         private IPasswordHasher _passwordHasher;
 
-        public EmployeeRepository(DataContext data, IPasswordHasher passwordHasher)
+        public DoctorRepository(DataContext data, IPasswordHasher passwordHasher)
         {
             _data = data;
             _passwordHasher = passwordHasher;
@@ -36,50 +36,50 @@ namespace DiplomaAPI.Repositories
             return _data.Positions.Find(id);
         }
 
-        public int getEmployeeCount()
+        public int getDoctorsCount()
         {
-           return _data.Employees.Count();
+           return _data.Doctors.Count();
         }
 
-        public List<Employee> getAll()
+        public List<Doctor> getAll()
         {
-            var employees = _data.Employees.ToList();
-            employees.ForEach(e =>
+            var Doctors = _data.Doctors.ToList();
+            Doctors.ForEach(e =>
             {
                 _data.Entry(e).Reference("Institution").Load();
                 _data.Entry(e).Reference("Position").Load();
                 _data.Entry(e).Reference("Department").Load();
             });
 
-            return employees;
+            return Doctors;
         }
 
-        public List<Employee> getEmployeeFromCertainDepartment(int depId)
+        public List<Doctor> getDoctorsFromCertainDepartment(int depId)
         {
-            var employees = _data.Employees.ToList();
-            employees.ForEach(e =>
+            var Doctors = _data.Doctors.ToList();
+            Doctors.ForEach(e =>
             {
                 _data.Entry(e).Reference("Institution").Load();
                 _data.Entry(e).Reference("Position").Load();
                 _data.Entry(e).Reference("Department").Load();
             });
 
-            employees = employees.Where(x => x.Department.DepartmentId == depId).ToList();
-            return employees;
+            Doctors = Doctors.Where(x => x.Department.DepartmentId == depId).ToList();
+            return Doctors;
         }
 
-        public Employee getById(int id)
+        public Doctor getById(int id)
         {
-            var employee = _data.Employees.Find(id);
+            var employee = _data.Doctors.Find(id);
             _data.Entry(employee).Reference("Institution").Load();
             _data.Entry(employee).Reference("Position").Load();
             _data.Entry(employee).Reference("Department").Load();
             return employee;
         }
 
-        public List<Employee> getByEmail(string email)
+        public List<Doctor> getByEmail(string email)
         {
-            var employee = _data.Employees.Where(x => x.Email == email).ToList();
+            var employee = _data.Doctors.Where(x => x.Email == email).ToList();
             employee.ForEach(e =>
             {
                 _data.Entry(e).Reference("Institution").Load();
@@ -89,9 +89,9 @@ namespace DiplomaAPI.Repositories
             return employee;
         }
 
-        public EmployeeViewModel Update(UpdateEmployeeViewModel data)
+        public DoctorViewModel Update(UpdateDoctorViewModel data)
         {
-            var employee = _data.Employees.Find(data.Id);
+            var employee = _data.Doctors.Find(data.Id);
 
             if (employee == null)
             {
@@ -140,11 +140,11 @@ namespace DiplomaAPI.Repositories
             return PrepareResponse(employee);
         }
 
-        public ListEmployees FilterEmployees(string filter, string filterBy, int depId)
+        public ListDoctors FilterDoctors(string filter, string filterBy, int depId)
         {
-            var employees = _data.Employees.Where(x => x.Department.DepartmentId == depId);
+            var Doctors = _data.Doctors.Where(x => x.Department.DepartmentId == depId);
 
-            foreach (var employee in employees)
+            foreach (var employee in Doctors)
             {
                 _data.Entry(employee).Reference("Position").Load();
             }
@@ -153,36 +153,36 @@ namespace DiplomaAPI.Repositories
             switch (filterBy)
             {
                 case "surname":
-                    employees = employees.Where(x => x.Surname == filter); 
+                    Doctors = Doctors.Where(x => x.Surname == filter); 
                     break;
                 case "name":
-                    employees = employees.Where(x => x.Name == filter);
+                    Doctors = Doctors.Where(x => x.Name == filter);
                     break;
                 case "patronymic":
-                    employees = employees.Where(x => x.Patronymic == filter);
+                    Doctors = Doctors.Where(x => x.Patronymic == filter);
                     break;
                 case "position":
-                    employees = employees.Where(x => x.Position.PositionName == filter);
+                    Doctors = Doctors.Where(x => x.Position.PositionName == filter);
                     break;
             }
 
-            var employeeFilterViewModels = new List<FilterEmployeeViewModel>();
+            var employeeFilterViewModels = new List<FilterDoctorViewModel>();
 
-            foreach(Employee employee in employees)
+            foreach(Doctor employee in Doctors)
             {
                 employeeFilterViewModels.Add(PrepareResponseFilter(employee));
             }
 
-            return new ListEmployees
+            return new ListDoctors
             {
                 Data = employeeFilterViewModels,
-                TotalCount = employees.Count()
+                TotalCount = Doctors.Count()
             };
         }
 
-        private EmployeeViewModel PrepareResponse(Employee employee)
+        private DoctorViewModel PrepareResponse(Doctor employee)
         {
-            return new EmployeeViewModel
+            return new DoctorViewModel
             {
                 Id = employee.Id,
                 Gender = employee.Gender,
@@ -200,9 +200,9 @@ namespace DiplomaAPI.Repositories
             };
         }
 
-        private FilterEmployeeViewModel PrepareResponseFilter(Employee employee)
+        private FilterDoctorViewModel PrepareResponseFilter(Doctor employee)
         {
-            return new FilterEmployeeViewModel
+            return new FilterDoctorViewModel
             {
                 Id = employee.Id,
                 Surname = employee.Surname,

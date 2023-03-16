@@ -2,7 +2,7 @@
 
 namespace DiplomaAPI.ViewModels.Employee
 {
-    public class EmployeeViewModel
+    public class DoctorViewModel
     {
         public int Id { get; set; }
 

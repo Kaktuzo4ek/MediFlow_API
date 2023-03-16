@@ -21,7 +21,7 @@ namespace DiplomaAPI.Repositories
 
         public List<InstitutionAndDepartment> getInstitutionAndDepartment(int id)
         {
-            var institutionAndDepartment = _data.institutionsAndDepartments.Where(x => x.InstitutionId == id).ToList();
+            var institutionAndDepartment = _data.InstitutionsAndDepartments.Where(x => x.InstitutionId == id).ToList();
             return institutionAndDepartment;
         }
 

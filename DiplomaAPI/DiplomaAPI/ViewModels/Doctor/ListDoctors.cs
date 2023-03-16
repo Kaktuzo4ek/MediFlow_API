@@ -1,8 +1,8 @@
 ﻿namespace DiplomaAPI.ViewModels.Employee
 {
-    public class ListEmployees
+    public class ListDoctors
     {
-        public List<FilterEmployeeViewModel> Data { get; set; }
+        public List<FilterDoctorViewModel> Data { get; set; }
         public int TotalCount { get; set; }
     }
 }

@@ -5,7 +5,7 @@ namespace DiplomaAPI.Services
 {
     public interface ITokenService
     {
-        JwtSecurityToken BuildToken(string key, string issuer, Employee user);
+        JwtSecurityToken BuildToken(string key, string issuer, Doctor user);
 
         bool ValidateToken(string key, string issuer, string audience, string token);
 

@@ -8,21 +8,21 @@ namespace DiplomaAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReferralCategoryController : ControllerBase
+    public class ServiceCategoryController : ControllerBase
     {
-        private IReferralCategoryRepository _referralCategoryRepository;
+        private readonly IServiceCategoryRepository _serviceCategoryRepository;
 
-        public ReferralCategoryController(IReferralCategoryRepository referralCategoryRepository)
+        public ServiceCategoryController(IServiceCategoryRepository serviceCategoryRepository)
         {
-            _referralCategoryRepository = referralCategoryRepository;
+            _serviceCategoryRepository = serviceCategoryRepository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReferralCategory>>> GetReferralCategories()
+        public async Task<ActionResult<IEnumerable<ServiceCategory>>> GetServiceCategories()
         {
             try
             {
-                return _referralCategoryRepository.getAll();
+                return _serviceCategoryRepository.getAll();
             }
             catch (ForbiddenException)
             {
@@ -31,11 +31,11 @@ namespace DiplomaAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ReferralCategory>> GetReferralCategory(int id)
+        public async Task<ActionResult<ServiceCategory>> GetServiceCategory(int id)
         {
             try
             {
-                return _referralCategoryRepository.getById(id);
+                return _serviceCategoryRepository.getById(id);
             }
             catch (ForbiddenException)
             {

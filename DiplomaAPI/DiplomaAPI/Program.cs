@@ -28,12 +28,14 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IInstitutionRepository, InstitutionRepository>();
 builder.Services.AddScoped<IPositionRepository, PositionRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IReferralPackageRepository, ReferralPackageRepository>();
 builder.Services.AddScoped<IReferralRepository, ReferralRepository>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
-builder.Services.AddScoped<IReferralCategoryRepository, ReferralCategoryRepository>();
+builder.Services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository>();
+builder.Services.AddScoped<IProcedureRepository, ProcedureRepository>();
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IPasswordHasher, PasswordHasher>();
@@ -43,12 +45,12 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DataContext"));
 });
 
-builder.Services.AddIdentity<Employee, IdentityRole<int>>()
+builder.Services.AddIdentity<Doctor, IdentityRole<int>>()
                 .AddEntityFrameworkStores<DataContext>();
 
-builder.Services.AddIdentityCore<Employee>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentityCore<Doctor>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DataContext>()
-                .AddTokenProvider<DataProtectorTokenProvider<Employee>>(TokenOptions.DefaultProvider);
+                .AddTokenProvider<DataProtectorTokenProvider<Doctor>>(TokenOptions.DefaultProvider);
 
 builder.Services.Configure<IdentityOptions>(opts =>
 

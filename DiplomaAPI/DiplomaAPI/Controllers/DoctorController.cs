@@ -11,21 +11,21 @@ namespace DiplomaAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class DoctorController : ControllerBase
     {
-        private IEmployeeRepository _employeeRepository;
+        private IDoctorRepository _doctorRepository;
 
-        public EmployeeController(IEmployeeRepository employeeRepository) 
+        public DoctorController(IDoctorRepository doctorRepository) 
         {
-            _employeeRepository = employeeRepository;
+            _doctorRepository = doctorRepository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetEmployees()
         {
             try
             {
-                return _employeeRepository.getAll();
+                return _doctorRepository.getAll();
             }
             catch (ForbiddenException)
             {
@@ -38,7 +38,7 @@ namespace DiplomaAPI.Controllers
         {
             try
             {
-                return _employeeRepository.getById(id);
+                return _doctorRepository.getById(id);
             }
             catch (NotFoundException)
             {
@@ -47,11 +47,11 @@ namespace DiplomaAPI.Controllers
         }*/
 
         [HttpGet("{email}")]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployeeByEmail(string email)
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetEmployeeByEmail(string email)
         {
             try
             {
-                return _employeeRepository.getByEmail(email);
+                return _doctorRepository.getByEmail(email);
             }
             catch (NotFoundException)
             {
@@ -60,11 +60,11 @@ namespace DiplomaAPI.Controllers
         }
 
         [HttpPost("{depId}")]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployeeFromCertainDepartment(int depId)
+        public async Task<ActionResult<IEnumerable<Doctor>>> getDoctorsFromCertainDepartment(int depId)
         {
             try
             {
-                return _employeeRepository.getEmployeeFromCertainDepartment(depId);
+                return _doctorRepository.getDoctorsFromCertainDepartment(depId);
             }
             catch (NotFoundException)
             {
@@ -72,19 +72,19 @@ namespace DiplomaAPI.Controllers
             }
         }
 
-        [HttpPost("FilterEmployees")]
-        public ListEmployees FilterEmployees(string filter, string filterBy, int depId)
+        [HttpPost("FilterDoctors")]
+        public ListDoctors FilterDoctors(string filter, string filterBy, int depId)
         {
-                return _employeeRepository.FilterEmployees(filter, filterBy, depId);
+                return _doctorRepository.FilterDoctors(filter, filterBy, depId);
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(EmployeeViewModel), 200)]
-        public async Task<IActionResult> Put(int id, [FromBody] UpdateEmployeeViewModel data)
+        [ProducesResponseType(typeof(DoctorViewModel), 200)]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateDoctorViewModel data)
         {
             data.Id = id;
 
-            return Ok(_employeeRepository.Update(data));
+            return Ok(_doctorRepository.Update(data));
         }
     }
 }
