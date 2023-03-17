@@ -31,11 +31,11 @@ namespace DiplomaAPI.Controllers
         }
 
         [HttpPost("searchPatients")]
-        public async Task<ActionResult<IEnumerable<Patient>>> SearchPatients(string surname, string name, string patronymic)
+        public async Task<ActionResult<IEnumerable<Patient>>> SearchPatients(string fullname)
         {
             try
             {
-                return _patientRepository.SearchPatients(surname, name, patronymic);
+                return _patientRepository.SearchPatients(fullname);
             }
             catch (ForbiddenException)
             {

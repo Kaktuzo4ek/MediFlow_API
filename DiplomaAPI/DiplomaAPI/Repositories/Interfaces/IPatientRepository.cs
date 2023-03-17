@@ -6,6 +6,6 @@ namespace DiplomaAPI.Repositories.Interfaces
     {
         public List<Patient> GetPatients();
 
-        public List<Patient> SearchPatients(string surname, string name, string patronymic);
+        public List<Patient> SearchPatients(string fullname);
     }
 }

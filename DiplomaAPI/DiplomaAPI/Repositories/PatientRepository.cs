@@ -18,23 +18,12 @@ namespace DiplomaAPI.Repositories
             return _data.Patients.ToList();
         }
 
-        public List<Patient> SearchPatients(string surname, string name, string patronymic)
+        public List<Patient> SearchPatients(string fullname)
         {
             var patients = _data.Patients.ToList();
             var patientsFound = new List<Patient>();
 
-            if(surname != "no")
-                patientsFound = patients.Where(p => p.Surname == surname).ToList();
-            else if(name != "no")
-                patientsFound = patients.Where(p => p.Name == name).ToList();
-            else if(patronymic != "no")
-                patientsFound = patients.Where(p => p.Patronymic == patronymic).ToList();
-
-            if(surname != "no" && name != "no")
-                patientsFound = patients.Where(p => p.Surname == surname && p.Name == name).ToList();
-
-            if(surname != "no" && name != "no" && patronymic != "no")
-                patientsFound = patients.Where(p => p.Surname == surname && p.Name == name && p.Patronymic == patronymic).ToList();
+            patientsFound = patients.Where(p => ((p.Surname + p.Name + p.Patronymic).ToLower()).Contains(fullname.ToLower())).ToList();
 
             return patientsFound;
         }
