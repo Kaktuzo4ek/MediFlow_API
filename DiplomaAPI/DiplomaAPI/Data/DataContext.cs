@@ -48,5 +48,9 @@ namespace DiplomaAPI.Data
         public DbSet<Service> Services { get; set; }
 
         public DbSet<Procedure> Procedures { get; set; }
+
+        public DbSet<Role> Roles { get; set; }
+
+        public DbSet<Certificate> Certificates { get; set; }
     }
 }

@@ -84,7 +84,7 @@ namespace DiplomaAPI.Repositories
 
             var referral = _data.Referrals.Find(referralId);
 
-            referral.ProcessStatus = "Погашене";
+            referral.ProcessStatus = "Погашене " + "(від " + DateTime.Now.Date + ")";
 
             _data.Referrals.Update(referral);
             _data.Procedures.Add(procedure);
@@ -123,7 +123,7 @@ namespace DiplomaAPI.Repositories
             if (data.ServiceId != "" && data.PrevServiceId != data.ServiceId)
             {
                 procedure.Referral.Service = _data.Services.Find(data.ServiceId);
-                referralUpdate.ProcessStatus = "Погашене";
+                referralUpdate.ProcessStatus = "Погашене " + "(від " + DateTime.Now.Date + ")";
                 prevReferralUpdate.ProcessStatus = "Не погашене";
                 _data.Update(referralUpdate);
                 _data.Update(prevReferralUpdate);

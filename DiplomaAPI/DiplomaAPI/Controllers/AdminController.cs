@@ -1,4 +1,6 @@
 ﻿using DiplomaAPI.Repositories.Interfaces;
+using DiplomaAPI.ViewModels;
+using DiplomaAPI.ViewModels.Role;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,10 +17,5 @@ namespace DiplomaAPI.Controllers
             _adminRepository = adminRepository;
         }
 
-        [HttpPost("/seed")]
-        public void SeedDB()
-        {
-            _adminRepository.seedDb();
-        }
     }
 }

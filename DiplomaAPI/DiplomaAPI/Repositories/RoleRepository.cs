@@ -1,28 +1,24 @@
 ﻿using DiplomaAPI.Data;
-using DiplomaAPI.Repositories.Interfaces;
 using DiplomaAPI.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using DiplomaAPI.ViewModels.Role;
-using DiplomaAPI.ViewModels;
+using DiplomaAPI.Repositories.Interfaces;
 
 namespace DiplomaAPI.Repositories
 {
-    public class AdminRepository : IAdminRepository
+    public class RoleRepository : IRoleRepository
     {
         private DataContext _data;
-        public AdminRepository(DataContext data)
+        public RoleRepository(DataContext data)
         {
             _data = data;
         }
 
-        public List<Role> GetRoles()
+        public List<Role> getAll()
         {
             var roles = _data.Roles.ToList();
             return roles;
         }
 
-        public Role GetRole(int id)
+        public Role getById(int id)
         {
             var role = _data.Roles.Find(id);
             return role;

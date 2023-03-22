@@ -72,10 +72,43 @@ namespace DiplomaAPI.Controllers
             }
         }
 
-        [HttpPost("FilterDoctors")]
-        public ListDoctors FilterDoctors(string filter, string filterBy, int depId)
+        [HttpPost("ConfirmDoctor")]
+        public async Task<ActionResult<Doctor>> ConfirmDoctor(int doctorId)
         {
-                return _doctorRepository.FilterDoctors(filter, filterBy, depId);
+            try
+            {
+                return _doctorRepository.ConfirmDoctor(doctorId);
+            }
+            catch (NotFoundException)
+            {
+                return StatusCode(404);
+            }
+        }
+
+        [HttpPost("DeclineDoctor")]
+        public async Task<ActionResult<Doctor>> DeclineDoctor(int doctorId)
+        {
+            try
+            {
+                return _doctorRepository.DeclineDoctor(doctorId);
+            }
+            catch (NotFoundException)
+            {
+                return StatusCode(404);
+            }
+        }
+
+        [HttpPost("GetNotConfirmDoctors")]
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetNotConfirmDoctors(int institutionId)
+        {
+            try
+            {
+                return _doctorRepository.GetNotConfirmDoctors(institutionId);
+            }
+            catch (NotFoundException)
+            {
+                return StatusCode(404);
+            }
         }
 
         [HttpPut("{id}")]

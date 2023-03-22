@@ -7,7 +7,9 @@ namespace DiplomaAPI.Repositories.Interfaces
     {
         public List<ReferralPackage> getAll(int patientId);
 
-        public ReferralPackage getById(string id);
+        public List<ReferralPackage> getMyReferrals(int doctorId);
+
+        public List<ReferralPackage> getById(string id);
 
         public ReferralPackageViewModel Create(CreateReferralPackageViewModel data);
     }

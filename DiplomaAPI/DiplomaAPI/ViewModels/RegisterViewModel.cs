@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DiplomaAPI.ViewModels
 {
@@ -20,7 +21,7 @@ namespace DiplomaAPI.ViewModels
         [Required]
         public int InstitutionId { get; set; }
 
-        [Required]
+        [AllowNull]
         public int DepartmentId { get; set; }
 
         [Required]
@@ -43,5 +44,11 @@ namespace DiplomaAPI.ViewModels
 
         [Required]
         public string Gender { get; set; }
+
+        [AllowNull]
+        public string Certificate { get; set; }
+
+        [Required]
+        public int RoleId { get; set; }
     }
 }

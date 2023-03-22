@@ -38,18 +38,39 @@ namespace DiplomaAPI.Repositories
             return referralPackages;
         }
 
-        public ReferralPackage getById(string id)
+
+        public List<ReferralPackage> getMyReferrals(int doctorId)
         {
-            var referralPackage = _data.ReferralPackages.Find(id);
-            _data.Entry(referralPackage).Reference("Doctor").Load();
-            _data.Entry(referralPackage).Reference("Patient").Load();
-            _data.Entry(referralPackage).Collection("Referrals").Load();
-            foreach (var service in referralPackage.Referrals)
+            var referralPackages = _data.ReferralPackages.Where(x => x.Doctor.Id == doctorId).ToList();
+            referralPackages.ForEach(package =>
             {
-                _data.Entry(service).Reference("Service").Load();
-                _data.Entry(service.Service).Reference("Category").Load();
-            }
-            return referralPackage;
+                _data.Entry(package).Reference("Doctor").Load();
+                _data.Entry(package).Reference("Patient").Load();
+                _data.Entry(package).Collection("Referrals").Load();
+                foreach (var service in package.Referrals)
+                {
+                    _data.Entry(service).Reference("Service").Load();
+                    _data.Entry(service.Service).Reference("Category").Load();
+                }
+            });
+            return referralPackages;
+        }
+
+        public List<ReferralPackage> getById(string id)
+        {
+            var referralPackages = _data.ReferralPackages.Where(x => x.ReferralPackageId == id).ToList();
+            referralPackages.ForEach(package =>
+            {
+                _data.Entry(package).Reference("Doctor").Load();
+                _data.Entry(package).Reference("Patient").Load();
+                _data.Entry(package).Collection("Referrals").Load();
+                foreach (var service in package.Referrals)
+                {
+                    _data.Entry(service).Reference("Service").Load();
+                    _data.Entry(service.Service).Reference("Category").Load();
+                }
+            });
+            return referralPackages;
         }
 
 

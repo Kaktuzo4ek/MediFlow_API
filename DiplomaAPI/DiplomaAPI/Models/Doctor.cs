@@ -9,7 +9,7 @@ namespace DiplomaAPI.Models
 
         public Models.Institution Institution { get; set; }
 
-        public Models.Department Department { get; set; }
+        public Models.Department? Department { get; set; }
 
         public string Surname { get; set; }
 
@@ -23,6 +23,10 @@ namespace DiplomaAPI.Models
 
         public Models.Position Position { get; set; }
 
+        public Models.Role Role { get; set; }
+
         public string Gender { get; set; }
+
+        public bool IsConfirmed { get; set; }
     }
 }

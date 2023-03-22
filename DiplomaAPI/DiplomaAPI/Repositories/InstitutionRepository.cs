@@ -19,12 +19,17 @@ namespace DiplomaAPI.Repositories
         public List<Institution> getAll()
         {
             var intsitutions = _data.Institutions.ToList();
+            intsitutions.ForEach(i =>
+            {
+                _data.Entry(i).Reference("Certificate").Load();
+            });
             return intsitutions;
         }
 
         public Institution getById(int id)
         {
             var institution = _data.Institutions.Find(id);
+            _data.Entry(institution).Reference("Certificate").Load();
             if (institution == null)
             {
                 throw new NotFoundException();

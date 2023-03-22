@@ -34,8 +34,21 @@ namespace DiplomaAPI.Controllers
             }
         }
 
+        [HttpPost("GetMyReferrals")]
+        public async Task<ActionResult<IEnumerable<ReferralPackage>>> GetMyReferrals(int doctorId)
+        {
+            try
+            {
+                return _referralPackageRepository.getMyReferrals(doctorId);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
         [HttpGet("{id}")]
-        public async Task<ActionResult<ReferralPackage>> GetReferralPackage(string id)
+        public async Task<ActionResult<IEnumerable<ReferralPackage>>> GetReferralPackage(string id)
         {
             try
             {

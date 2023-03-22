@@ -11,6 +11,16 @@ namespace DiplomaAPI.Repositories.Interfaces
 
         public Position setPosition(int id);
 
+        public Role setRole(int id);
+
+        public Doctor LoadObjects(Doctor doctor);
+
+        public Doctor ConfirmDoctor(int doctorId);
+
+        public Doctor DeclineDoctor(int doctorId);
+
+        public List<Doctor> GetNotConfirmDoctors(int institutionId);
+
         public int getDoctorsCount();
 
         public List<Doctor> getAll();
@@ -22,7 +32,5 @@ namespace DiplomaAPI.Repositories.Interfaces
         public List<Doctor> getByEmail(string email);
 
         public DoctorViewModel Update(UpdateDoctorViewModel data);
-
-        public ListDoctors FilterDoctors(string filter, string filterBy, int depId);
     }
 }

@@ -7,5 +7,7 @@
         public string Name { get; set; }
 
         public string Adress { get; set; }
+
+        public Models.Certificate Certificate { get; set; }
     }
 }

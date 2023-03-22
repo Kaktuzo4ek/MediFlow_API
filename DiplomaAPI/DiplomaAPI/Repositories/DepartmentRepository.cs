@@ -22,6 +22,12 @@ namespace DiplomaAPI.Repositories
         public List<InstitutionAndDepartment> getInstitutionAndDepartment(int id)
         {
             var institutionAndDepartment = _data.InstitutionsAndDepartments.Where(x => x.InstitutionId == id).ToList();
+            institutionAndDepartment.ForEach(x =>
+            {
+                _data.Entry(x).Reference("Institution").Load();
+                _data.Entry(x.Institution).Reference("Certificate").Load();
+                _data.Entry(x).Reference("Department").Load();
+            });
             return institutionAndDepartment;
         }
 

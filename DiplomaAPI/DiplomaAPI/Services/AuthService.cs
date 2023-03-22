@@ -1,4 +1,5 @@
 ﻿using DiplomaAPI.Models;
+using DiplomaAPI.Repositories;
 using DiplomaAPI.Repositories.Interfaces;
 using DiplomaAPI.ViewModels;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,19 +18,22 @@ namespace DiplomaAPI.Services
 {
     public class AuthService : IAuthService
     {
-        private UserManager<Doctor> _userManager;
-        private IConfiguration _configuration;
-        private IMailService _mailService;
-        private ITokenService _tokenService;
-        private IDoctorRepository _doctorRepository;
+        private readonly UserManager<Doctor> _userManager;
+        private readonly IConfiguration _configuration;
+        private readonly IMailService _mailService;
+        private readonly ITokenService _tokenService;
+        private readonly IDoctorRepository _doctorRepository;
+        private readonly IInstitutionRepository _institutionRepository;
 
-        public AuthService(UserManager<Doctor> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService, IDoctorRepository doctorRepository)
+
+        public AuthService(UserManager<Doctor> userManager, IConfiguration configuration, IMailService mailService, ITokenService tokenService, IDoctorRepository doctorRepository, IInstitutionRepository institutionRepository)
         {
             _userManager = userManager;
             _configuration = configuration;
             _mailService = mailService;
             _tokenService = tokenService;
             _doctorRepository = doctorRepository;
+            _institutionRepository = institutionRepository;
         }
 
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterViewModel model)
@@ -44,20 +48,34 @@ namespace DiplomaAPI.Services
                     IsSuccess = false,
                 };
 
-            var identityUser = new Doctor
-            {
-                Email = model.Email,
-                UserName = model.Email,
-                Institution = _doctorRepository.setInstitition(model.InstitutionId),
-                Department = _doctorRepository.setDepartment(model.DepartmentId),
-                Surname = model.Surname,
-                Name = model.Name,
-                Patronymic = model.Patronymic,
-                PhoneNumber = model.PhoneNumber,
-                DateOfBirth = model.DateOfBirth.Date,
-                Position = _doctorRepository.setPosition(model.PositionId),
-                Gender = model.Gender
-            };
+            var institution = _institutionRepository.getById(model.InstitutionId);
+            var isConfirmed = false;
+
+            if (model.RoleId == 1 && institution.Certificate.CertificateNumber != model.Certificate)
+                return new UserManagerResponse
+                {
+                    Message = "Certificate doesn`t match",
+                    IsSuccess = true,
+                };
+            else
+                isConfirmed = true;
+
+                var identityUser = new Doctor
+                {
+                    Email = model.Email,
+                    UserName = model.Email,
+                    Institution = _doctorRepository.setInstitition(model.InstitutionId),
+                    Department = _doctorRepository.setDepartment(model.DepartmentId),
+                    Surname = model.Surname,
+                    Name = model.Name,
+                    Patronymic = model.Patronymic,
+                    PhoneNumber = model.PhoneNumber,
+                    DateOfBirth = model.DateOfBirth.Date,
+                    Position = _doctorRepository.setPosition(model.PositionId),
+                    Gender = model.Gender,
+                    Role = _doctorRepository.setRole(model.RoleId),
+                    IsConfirmed = isConfirmed
+                };
 
             
             var result = await _userManager.CreateAsync(identityUser, model.Password);
@@ -97,7 +115,16 @@ namespace DiplomaAPI.Services
 
              user = await _userManager.FindByEmailAsync(model.Email);
 
-            if(user.EmailConfirmed == false)
+            if(user == null)
+            {
+                return new UserManagerResponse
+                {
+                    Message = "There is no user with that Email adress" + "     ",
+                    IsSuccess = false,
+                };
+            }
+
+            if (user.EmailConfirmed == false)
             {
                 return new UserManagerResponse
                 {
@@ -106,11 +133,11 @@ namespace DiplomaAPI.Services
                 };
             }
 
-            if(user == null)
+            if (!user.IsConfirmed)
             {
                 return new UserManagerResponse
                 {
-                    Message = "There is no user with that Email adress" + "     ",
+                    Message = "Not Confirmed",
                     IsSuccess = false,
                 };
             }
