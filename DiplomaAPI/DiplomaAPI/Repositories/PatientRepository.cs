@@ -18,6 +18,11 @@ namespace DiplomaAPI.Repositories
             return _data.Patients.ToList();
         }
 
+        public Patient GetPatient(int id)
+        {
+            return _data.Patients.Find(id);
+        }
+
         public List<Patient> SearchPatients(string fullname)
         {
             var patients = _data.Patients.ToList();

@@ -30,6 +30,19 @@ namespace DiplomaAPI.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Patient>> GetPatient(int id)
+        {
+            try
+            {
+                return _patientRepository.GetPatient(id);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
         [HttpPost("searchPatients")]
         public async Task<ActionResult<IEnumerable<Patient>>> SearchPatients(string fullname)
         {

@@ -52,5 +52,17 @@ namespace DiplomaAPI.Data
         public DbSet<Role> Roles { get; set; }
 
         public DbSet<Certificate> Certificates { get; set; }
+
+        public DbSet<DiagnosisMKX10AM> DiagnosesMKX10AM { get; set; }
+
+        public DbSet<DiagnosisMKX10AMCategory> DiagnosesMKX10AMCategories { get; set; }
+
+        public DbSet<DiagnosisICPC2> DiagnosesICPC2 { get; set;}
+
+        public DbSet<DiagnosisICPC2Category> DiagnosesICPC2Categories { get; set; }
+
+        public DbSet<Appointment> Appointments { get; set; }
+
+        public DbSet<AmbulatoryEpisode> AmbulatoryEpisodes { get; set; }
     }
 }

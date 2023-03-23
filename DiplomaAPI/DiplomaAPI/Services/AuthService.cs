@@ -60,6 +60,9 @@ namespace DiplomaAPI.Services
             else
                 isConfirmed = true;
 
+            if(model.RoleId != 1)
+                isConfirmed = false;
+
                 var identityUser = new Doctor
                 {
                     Email = model.Email,

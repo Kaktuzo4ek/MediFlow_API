@@ -24,7 +24,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IInstitutionRepository, InstitutionRepository>();
 builder.Services.AddScoped<IPositionRepository, PositionRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
@@ -37,6 +36,12 @@ builder.Services.AddScoped<IServiceCategoryRepository, ServiceCategoryRepository
 builder.Services.AddScoped<IProcedureRepository, ProcedureRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IDiagnosisICPC2Repository, DiagnosisICPC2Repository>();
+builder.Services.AddScoped<IDiagnosisMKX10AMRepository, DiagnosisMKX10AMRepository>();
+builder.Services.AddScoped<IAmbulatoryEpisodeRepository, AmbulatoryEpisodeRepository>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IPasswordHasher, PasswordHasher>();
