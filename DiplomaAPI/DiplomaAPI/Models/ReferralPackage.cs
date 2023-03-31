@@ -12,6 +12,8 @@
 
         public DateTime Validity { get; set; }
 
+        public string ProcessStatus { get; set; }
+
         public ICollection<Referral> Referrals { get; set; }
     }
 }

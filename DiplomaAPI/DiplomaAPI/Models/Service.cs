@@ -7,5 +7,7 @@
         public string ServiceName { get; set; }
 
         public Models.ServiceCategory Category { get; set; }
+
+        //public ICollection<AppointmentAndService> AppointmentsAndServices { get; set; }
     }
 }

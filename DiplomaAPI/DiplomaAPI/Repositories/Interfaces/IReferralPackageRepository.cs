@@ -7,6 +7,8 @@ namespace DiplomaAPI.Repositories.Interfaces
     {
         public List<ReferralPackage> getAll(int patientId);
 
+        public List<ReferralPackage> GetByEpisodeId(int episodeId);
+
         public List<ReferralPackage> getMyReferrals(int doctorId);
 
         public List<ReferralPackage> getById(string id);

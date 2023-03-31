@@ -22,6 +22,19 @@ namespace DiplomaAPI.Repositories
             return services;
         }
 
+        public List<Service> getProcedures()
+        {
+            var services = _data.Services.ToList();
+            services.ForEach(service =>
+            {
+                _data.Entry(service).Reference("Category").Load();
+            });
+
+            services = services.Where(s => (s.Category.CategoryName.ToLower()).Contains("Процедура".ToLower())).ToList();
+
+            return services;
+        }
+
         public Service getById(string id)
         {
             var service = _data.Services.Find(id);

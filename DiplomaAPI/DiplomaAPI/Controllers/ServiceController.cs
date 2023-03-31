@@ -30,6 +30,19 @@ namespace DiplomaAPI.Controllers
             }
         }
 
+        [HttpPost("GetProcedures")]
+        public async Task<ActionResult<IEnumerable<Service>>> GetProcedures()
+        {
+            try
+            {
+                return _serviceRepository.getProcedures();
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Service>> GetService(string id)
         {

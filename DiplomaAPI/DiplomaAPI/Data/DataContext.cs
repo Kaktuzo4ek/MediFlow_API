@@ -25,6 +25,10 @@ namespace DiplomaAPI.Data
             modelBuilder.Entity<Doctor>().ToTable("Doctors");
 
             modelBuilder.Entity<InstitutionAndDepartment>().HasKey(key => new { key.InstitutionId, key.DepartmentId });
+
+            modelBuilder.Entity<AppointmentAndService>().HasKey(key => new { key.AppointmentId, key.ServiceId });
+
+            modelBuilder.Entity<AppointmentAndDiagnosisICPC2>().HasKey(key => new { key.AppointmentId, key.DiagnosisId });
         }
 
         public DbSet<Doctor> Doctors { get; set; }
@@ -45,6 +49,8 @@ namespace DiplomaAPI.Data
 
         public DbSet<ServiceCategory> ServiceCategories { get; set; }
 
+        public DbSet<AppointmentAndService> AppointmentsAndServices { get; set; }
+
         public DbSet<Service> Services { get; set; }
 
         public DbSet<Procedure> Procedures { get; set; }
@@ -64,5 +70,9 @@ namespace DiplomaAPI.Data
         public DbSet<Appointment> Appointments { get; set; }
 
         public DbSet<AmbulatoryEpisode> AmbulatoryEpisodes { get; set; }
+
+        public DbSet<DiagnosticReport> DiagnosticReports { get; set; }
+
+        public DbSet<AppointmentAndDiagnosisICPC2> AppointmentsAndDiagnosesICPC2 { get; set; }
     }
 }

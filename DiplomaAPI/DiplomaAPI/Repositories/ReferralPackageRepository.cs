@@ -56,6 +56,36 @@ namespace DiplomaAPI.Repositories
             return referralPackages;
         }
 
+        public List<ReferralPackage> GetByEpisodeId(int episodeId)
+        {
+            var episode = _data.AmbulatoryEpisodes.Find(episodeId);
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            _data.Entry(episode).Reference("ReferralPackage").Load();
+
+            var referralPackages = new List<ReferralPackage>();
+
+            if (episode.ReferralPackage != null)
+            {
+                referralPackages = _data.ReferralPackages.Where(x => x.ReferralPackageId == episode.ReferralPackage.ReferralPackageId).ToList();
+
+                referralPackages.ForEach(package =>
+                {
+                    _data.Entry(package).Reference("Doctor").Load();
+                    _data.Entry(package).Reference("Patient").Load();
+                    _data.Entry(package).Collection("Referrals").Load();
+                    foreach (var service in package.Referrals)
+                    {
+                        _data.Entry(service).Reference("Service").Load();
+                        _data.Entry(service.Service).Reference("Category").Load();
+                    }
+                });
+            }
+            return referralPackages;
+        }
+
         public List<ReferralPackage> getById(string id)
         {
             var referralPackages = _data.ReferralPackages.Where(x => x.ReferralPackageId == id).ToList();
@@ -73,15 +103,33 @@ namespace DiplomaAPI.Repositories
             return referralPackages;
         }
 
+        public static string GenerateReferralPackageNumber(int length)
+        {
+            var random = new Random();
+            var result = "";
+
+            for (int i = 0; i < length; i++)
+            {
+                if (i % 4 == 0 && i != 0)
+                {
+                    result += "-";
+                }
+
+                result += random.Next(0, 10).ToString();
+            }
+
+            return result;
+        }
 
         public ReferralPackageViewModel Create(CreateReferralPackageViewModel data)
         {
-            if ((_data.ReferralPackages.Find(data.ReferralPackageId) != null || data.ReferralPackageId == "") && data.Services[0].Length == 0  && data.Priority == "")
-            {
-                throw new NotFoundException();
-            }
 
-            var refCount = _data.Referrals.Count();
+            var referralPackageId = GenerateReferralPackageNumber(16);
+
+            while (_data.ReferralPackages.Find(referralPackageId) != null)
+            {
+                referralPackageId = GenerateReferralPackageNumber(16);
+            }
 
             for (int i = 0; i < data.Services.Length; i++)
             {
@@ -91,7 +139,7 @@ namespace DiplomaAPI.Repositories
 
                 _data.Referrals.Add(new Referral
                 {
-                    ReferralPackageId = data.ReferralPackageId,
+                    ReferralPackageId = referralPackageId,
                     Service = service,
                     Priority = data.Priority,
                     Status = "Активне",
@@ -101,11 +149,12 @@ namespace DiplomaAPI.Repositories
 
             var referralPackage = new ReferralPackage
             {
-                ReferralPackageId = data.ReferralPackageId,
+                ReferralPackageId = referralPackageId,
                 Doctor = _data.Doctors.Find(data.DoctorId),
                 Patient = _data.Patients.Find(data.PatientId),
                 Date = DateTime.Now,
-                Validity = DateTime.Now.AddYears(1)
+                Validity = DateTime.Now.AddYears(1),
+                ProcessStatus = "Не погашений"
             };
 
             _data.ReferralPackages.Add(referralPackage);

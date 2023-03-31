@@ -28,8 +28,12 @@ namespace DiplomaAPI.Repositories
             procedures.ForEach(p =>
             {
                 _data.Entry(p).Reference("Referral").Load();
-                _data.Entry(p.Referral).Reference("Service").Load();
-                _data.Entry(p.Referral.Service).Reference("Category").Load();
+                if (p.Referral != null)
+                {
+                    _data.Entry(p.Referral).Reference("Service").Load();
+                    _data.Entry(p.Referral.Service).Reference("Category").Load();
+                }
+
                 _data.Entry(p).Reference("Doctor").Load();
                 _data.Entry(p.Doctor).Reference("Institution").Load();
                 _data.Entry(p.Doctor).Reference("Department").Load();
@@ -61,6 +65,10 @@ namespace DiplomaAPI.Repositories
         {
             var referralTmp = _data.Referrals.Where(x => x.ReferralPackageId == data.ReferralPackageId && x.Service.ServiceId == data.ServiceId).ToList();
 
+            var service = _data.Services.Find(data.ServiceId);
+
+            _data.Entry(service).Reference("Category").Load();
+
             if (referralTmp == null)
             {
                 throw new NotFoundException();
@@ -79,12 +87,14 @@ namespace DiplomaAPI.Repositories
                 Patient = _data.Patients.Find(data.PatientId),
                 Status = data.Status,
                 EventDate = DateTime.Now,
-                DateCreated = DateTime.Now
+                DateCreated = DateTime.Now,
+                ProcedureName = '(' + service.ServiceId + ") " + service.ServiceName,
+                Category = service.Category.CategoryName,
             };
 
             var referral = _data.Referrals.Find(referralId);
 
-            referral.ProcessStatus = "Погашене " + "(від " + DateTime.Now.Date + ")";
+            referral.ProcessStatus = "Погашене " + "(від " + DateTime.Now + ")";
 
             _data.Referrals.Update(referral);
             _data.Procedures.Add(procedure);
@@ -98,6 +108,10 @@ namespace DiplomaAPI.Repositories
             var procedure = _data.Procedures.Find(data.ProcedureId);
             _data.Entry(procedure).Reference("Referral").Load();
             _data.Entry(procedure.Referral).Reference("Service").Load();
+
+            var service = _data.Services.Find(data.ServiceId);
+
+            _data.Entry(service).Reference("Category").Load();
 
             if (procedure == null)
             {
@@ -123,7 +137,7 @@ namespace DiplomaAPI.Repositories
             if (data.ServiceId != "" && data.PrevServiceId != data.ServiceId)
             {
                 procedure.Referral.Service = _data.Services.Find(data.ServiceId);
-                referralUpdate.ProcessStatus = "Погашене " + "(від " + DateTime.Now.Date + ")";
+                referralUpdate.ProcessStatus = "Погашене " + "(від " + DateTime.Now + ")";
                 prevReferralUpdate.ProcessStatus = "Не погашене";
                 _data.Update(referralUpdate);
                 _data.Update(prevReferralUpdate);
@@ -134,7 +148,13 @@ namespace DiplomaAPI.Repositories
                 procedure.Status = data.Status;
             }
 
-            _data.Update(procedure);
+            if(data.ServiceId != data.PrevServiceId)
+            {
+                procedure.ProcedureName = '(' + service.ServiceId + ") " + service.ServiceName;
+                procedure.Category = service.Category.CategoryName;
+            }
+
+            _data.Procedures.Update(procedure);
 
             _data.SaveChanges();
 

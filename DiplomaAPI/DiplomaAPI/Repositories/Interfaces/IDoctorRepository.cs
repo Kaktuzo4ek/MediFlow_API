@@ -21,6 +21,10 @@ namespace DiplomaAPI.Repositories.Interfaces
 
         public List<Doctor> GetNotConfirmDoctors(int institutionId);
 
+        public List<Doctor> GetDoctorsFromInstitution(int institutionId);
+
+        public List<Doctor> GetDoctorsExcludeInstitution(int institutionId);
+
         public int getDoctorsCount();
 
         public List<Doctor> getAll();

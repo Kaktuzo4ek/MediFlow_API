@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IDiagnosisICPC2Repository, DiagnosisICPC2Repository>();
 builder.Services.AddScoped<IDiagnosisMKX10AMRepository, DiagnosisMKX10AMRepository>();
 builder.Services.AddScoped<IAmbulatoryEpisodeRepository, AmbulatoryEpisodeRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddTransient<IMailService, MailService>();
@@ -54,6 +56,11 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddIdentity<Doctor, IdentityRole<int>>()
                 .AddEntityFrameworkStores<DataContext>();
 
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.WriteIndented = true;
+});
 
 builder.Services.AddIdentityCore<Doctor>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<DataContext>()

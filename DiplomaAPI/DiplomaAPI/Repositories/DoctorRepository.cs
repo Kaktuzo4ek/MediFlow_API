@@ -140,6 +140,32 @@ namespace DiplomaAPI.Repositories
             return employee;
         }
 
+        public List<Doctor> GetDoctorsFromInstitution(int institutionId)
+        {
+            var doctors = _data.Doctors.Where(x => x.Institution.InstitutionId == institutionId && x.IsConfirmed == true).ToList();
+            doctors.ForEach(e =>
+            {
+                _data.Entry(e).Reference("Institution").Load();
+                _data.Entry(e).Reference("Position").Load();
+                _data.Entry(e).Reference("Department").Load();
+                _data.Entry(e).Reference("Role").Load();
+            });
+            return doctors;
+        }
+
+        public List<Doctor> GetDoctorsExcludeInstitution(int institutionId)
+        {
+            var doctors = _data.Doctors.Where(x => x.Institution.InstitutionId != institutionId && x.IsConfirmed == true).ToList();
+            doctors.ForEach(e =>
+            {
+                _data.Entry(e).Reference("Institution").Load();
+                _data.Entry(e).Reference("Position").Load();
+                _data.Entry(e).Reference("Department").Load();
+                _data.Entry(e).Reference("Role").Load();
+            });
+            return doctors;
+        }
+
         public DoctorViewModel Update(UpdateDoctorViewModel data)
         {
             var employee = _data.Doctors.Find(data.Id);

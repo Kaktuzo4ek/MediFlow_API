@@ -31,6 +31,19 @@ namespace DiplomaAPI.Controllers
             }
         }
 
+        [HttpPost("GetReasons")]
+        public async Task<ActionResult<IEnumerable<DiagnosisICPC2>>> GetReasons()
+        {
+            try
+            {
+                return _diagnosisRepository.GetReasons();
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<DiagnosisICPC2>> GetDiagnosis(int id)
         {

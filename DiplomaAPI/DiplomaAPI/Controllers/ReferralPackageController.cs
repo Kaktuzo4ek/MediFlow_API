@@ -47,6 +47,20 @@ namespace DiplomaAPI.Controllers
             }
         }
 
+
+        [HttpPost("GetByEpisodeId")]
+        public async Task<ActionResult<IEnumerable<ReferralPackage>>> GetByEpisodeId(int episodeId)
+        {
+            try
+            {
+                return _referralPackageRepository.GetByEpisodeId(episodeId);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<ReferralPackage>>> GetReferralPackage(string id)
         {

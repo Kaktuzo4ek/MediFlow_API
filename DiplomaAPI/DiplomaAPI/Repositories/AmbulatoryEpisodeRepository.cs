@@ -5,6 +5,12 @@ using DiplomaAPI.ViewModels.ReferralPackage;
 using SendGrid.Helpers.Errors.Model;
 using DiplomaAPI.ViewModels;
 using DiplomaAPI.ViewModels.AmbulatoryEpisode;
+using Microsoft.VisualBasic;
+using System.Collections.ObjectModel;
+using DiplomaAPI.ViewModels.AmbulatoryEpisode.Appointment;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using DiplomaAPI.ViewModels.Procedure;
+using DiplomaAPI.ViewModels.AmbulatoryEpisode.DiagnosisReport;
 
 namespace DiplomaAPI.Repositories
 {
@@ -24,20 +30,63 @@ namespace DiplomaAPI.Repositories
             {
                 _data.Entry(episode).Reference("Doctor").Load();
                 _data.Entry(episode).Reference("Patient").Load();
-                _data.Entry(episode).Reference("Appointment").Load();
+                _data.Entry(episode).Collection("Appointments").Load();
                 _data.Entry(episode).Reference("DiagnosisMKX10AM").Load();
                 _data.Entry(episode).Reference("ReferralPackage").Load();
-                _data.Entry(episode).Reference("Procedure").Load();
+                _data.Entry(episode).Collection("Procedure").Load();
             });
 
             return episodes;
         }
 
+
+        public List<AmbulatoryEpisode> GetEpisode(int id)
+        {
+            var episode = _data.AmbulatoryEpisodes.Where(x => x.EpisodeId == id).ToList();
+
+            episode.ForEach(epis =>
+            {
+                _data.Entry(epis).Reference("Doctor").Load();
+                _data.Entry(epis.Doctor).Reference("Institution").Load();
+                _data.Entry(epis).Reference("Patient").Load();
+                _data.Entry(epis).Collection("Appointments").Load();
+                _data.Entry(epis).Collection("DiagnosticReports").Load();
+                foreach (var entry in epis.DiagnosticReports)
+                {
+                    _data.Entry(entry).Reference("Service").Load();
+                    if(entry.Service != null)
+                        _data.Entry(entry.Service).Reference("Category").Load();
+                    _data.Entry(entry).Reference("ExecutantDoctor").Load();
+                    _data.Entry(entry).Reference("InterpretedDoctor").Load();
+                }
+                foreach (var entry in epis.Appointments)
+                {
+                    _data.Entry(entry).Collection("AppointmentsAndDiagnosesICPC2").Load();
+                    foreach (var diagnoses in entry.AppointmentsAndDiagnosesICPC2)
+                    {
+                        _data.Entry(diagnoses).Reference("Appointment").Load();
+                        _data.Entry(diagnoses).Reference("DiagnosisICPC2").Load();
+                        //_data.Entry(diagnoses.DiagnosisICPC2.Category).Reference("Category").Load();
+                    }
+
+                    _data.Entry(entry).Collection("AppointmentsAndServices").Load();
+                    foreach (var appAndServ in entry.AppointmentsAndServices)
+                    {
+                        _data.Entry(appAndServ).Reference("Appointment").Load();
+                        _data.Entry(appAndServ).Reference("Service").Load();
+                    }
+                }
+                _data.Entry(epis).Reference("DiagnosisMKX10AM").Load();
+                _data.Entry(epis).Reference("ReferralPackage").Load();
+                _data.Entry(epis).Collection("Procedure").Load();
+            });
+
+            return episode;
+        }
+
         public AmbulatoryEpisodeViewModel Create(CreateAmbulatoryEpisodeViewModel model)
         {
 
-            var diagnosis = _data.DiagnosesMKX10AM.Find(model.DiagnosisId);
-            var test = 0;
             var episode = new AmbulatoryEpisode
             {
                 Doctor = _data.Doctors.Find(model.DoctorId),
@@ -50,6 +99,145 @@ namespace DiplomaAPI.Repositories
             };
 
             _data.AmbulatoryEpisodes.Add(episode);
+            _data.SaveChanges();
+
+            return PrepareResponse(episode);
+        }
+
+        public static string GenerateReferralPackageNumber(int length)
+        {
+            var random = new Random();
+            var result = "";
+
+            for (int i = 0; i < length; i++)
+            {
+                if (i % 4 == 0 && i != 0)
+                {
+                    result += "-";
+                }
+
+                result += random.Next(0, 10).ToString();
+            }
+
+            return result;
+        }
+
+        public AmbulatoryEpisodeViewModel CreateReferralPackage(int episodeId, CreateReferralPackageViewModel model)
+        {
+
+            var episode = _data.AmbulatoryEpisodes.Find(episodeId);
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            var referralPackageId = GenerateReferralPackageNumber(16);
+
+            while (_data.ReferralPackages.Find(referralPackageId) != null)
+            {
+                referralPackageId = GenerateReferralPackageNumber(16);
+            }
+
+            for (int i = 0; i < model.Services.Length; i++)
+            {
+                var service = _data.Services.Find(model.Services[i].ToString());
+
+                _data.Entry(service).Reference("Category").Load();
+
+                _data.Referrals.Add(new Referral
+                {
+                    ReferralPackageId = referralPackageId,
+                    Service = service,
+                    Priority = model.Priority,
+                    Status = "Активне",
+                    ProcessStatus = "Не погашене"
+                });
+            }
+
+            episode.ReferralPackage = new ReferralPackage
+            {
+                ReferralPackageId = referralPackageId,
+                Doctor = _data.Doctors.Find(model.DoctorId),
+                Patient = _data.Patients.Find(model.PatientId),
+                Date = DateTime.Now,
+                Validity = DateTime.Now.AddYears(1),
+                ProcessStatus = "Не погашений"
+            };
+
+            _data.AmbulatoryEpisodes.Update(episode);
+            _data.SaveChanges();
+
+            return PrepareResponse(episode);
+        }
+
+        public AmbulatoryEpisodeViewModel CreateDiagnosticReport(int episodeId, CreateDiagnosticReportViewModel model)
+        {
+            var episode = _data.AmbulatoryEpisodes.Find(episodeId);
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            _data.Entry(episode).Collection("DiagnosticReports").Load();
+
+            episode.DiagnosticReports.Add(new DiagnosticReport
+            {
+                Service = _data.Services.Find(model.ServiceId),
+                Category = model.Category,
+                Conclusion = model.Conclusion,
+                Date = DateTime.Now,
+                ExecutantDoctor = _data.Doctors.Find(model.ExecutantDoctorId),
+                InterpretedDoctor = _data.Doctors.Find(model.InterpretedDoctorId)
+            });
+
+            _data.AmbulatoryEpisodes.Update(episode);
+            _data.SaveChanges();
+
+            return PrepareResponse(episode);
+        }
+
+        public AmbulatoryEpisodeViewModel CreateProcedure(int episodeId, CreateProcedureViewModel model)
+        {
+            var episode = _data.AmbulatoryEpisodes.Find(episodeId);
+
+            var referralTmp = _data.Referrals.Where(x => x.ReferralPackageId == model.ReferralPackageId && x.Service.ServiceId == model.ServiceId).ToList();
+
+            var service = _data.Services.Find(model.ServiceId);
+
+            _data.Entry(service).Reference("Category").Load();
+
+            if (referralTmp == null)
+            {
+                throw new NotFoundException();
+            }
+
+            int referralId = 0;
+            referralTmp.ForEach(r =>
+            {
+                referralId = r.ReferralId;
+            });
+
+            _data.Entry(episode).Collection("Procedure").Load();
+
+            episode.Procedure.Add(new Procedure
+            {
+                Referral = _data.Referrals.Find(referralId),
+                Doctor = _data.Doctors.Find(model.DoctorId),
+                Patient = _data.Patients.Find(model.PatientId),
+                Status = model.Status,
+                EventDate = DateTime.Now,
+                DateCreated = DateTime.Now,
+                ProcedureName = '(' + service.ServiceId + ") " + service.ServiceName,
+                Category = service.Category.CategoryName,
+            });
+
+            var referral = _data.Referrals.Find(referralId);
+
+            if(referral != null)
+            {
+                referral.ProcessStatus = "Погашене " + "(від " + DateTime.Now + ")";
+                _data.Referrals.Update(referral);
+            }
+
+            _data.AmbulatoryEpisodes.Update(episode);
             _data.SaveChanges();
 
             return PrepareResponse(episode);
@@ -72,6 +260,32 @@ namespace DiplomaAPI.Repositories
 
 
             _data.Update(episode);
+            _data.SaveChanges();
+
+            return PrepareResponse(episode);
+        }
+
+        public AmbulatoryEpisodeViewModel UpdateDiagnosis(int episodeId, string diagnosisId)
+        {
+            var episode = _data.AmbulatoryEpisodes.Find(episodeId);
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            _data.Entry(episode).Reference("DiagnosisMKX10AM").Load();
+
+            if(episode.DiagnosisMKX10AM != null)
+            {
+                if(episode.DiagnosisMKX10AM.DiagnosisId != diagnosisId)
+                {
+                    episode.DiagnosisMKX10AM = _data.DiagnosesMKX10AM.Find(diagnosisId);
+                }
+            } else
+            {
+                episode.DiagnosisMKX10AM = _data.DiagnosesMKX10AM.Find(diagnosisId);
+            }
+
+            _data.AmbulatoryEpisodes.Update(episode);
             _data.SaveChanges();
 
             return PrepareResponse(episode);

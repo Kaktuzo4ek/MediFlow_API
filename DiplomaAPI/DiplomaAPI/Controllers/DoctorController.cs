@@ -111,6 +111,32 @@ namespace DiplomaAPI.Controllers
             }
         }
 
+        [HttpPost("GetDoctorsFromInstitution")]
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctorsFromInstitution(int institutionId)
+        {
+            try
+            {
+                return _doctorRepository.GetDoctorsFromInstitution(institutionId);
+            }
+            catch (NotFoundException)
+            {
+                return StatusCode(404);
+            }
+        }
+
+        [HttpPost("GetDoctorsExcludeInstitution")]
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctorsExcludenstitution(int institutionId)
+        {
+            try
+            {
+                return _doctorRepository.GetDoctorsExcludeInstitution(institutionId);
+            }
+            catch (NotFoundException)
+            {
+                return StatusCode(404);
+            }
+        }
+
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(DoctorViewModel), 200)]
         public async Task<IActionResult> Put(int id, [FromBody] UpdateDoctorViewModel data)

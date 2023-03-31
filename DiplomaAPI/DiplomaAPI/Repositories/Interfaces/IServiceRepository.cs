@@ -6,6 +6,8 @@ namespace DiplomaAPI.Repositories.Interfaces
     {
         public List<Service> getAll();
 
+        public List<Service> getProcedures();
+
         public Service getById(string id);
     }
 }

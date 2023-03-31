@@ -217,6 +217,25 @@ namespace DiplomaAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Services",
+                columns: table => new
+                {
+                    ServiceId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ServiceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Services", x => x.ServiceId);
+                    table.ForeignKey(
+                        name: "FK_Services_ServiceCategories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "ServiceCategories",
+                        principalColumn: "CategoryId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Doctors",
                 columns: table => new
                 {
@@ -297,33 +316,6 @@ namespace DiplomaAPI.Migrations
                         principalTable: "Institutions",
                         principalColumn: "InstitutionId",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Appointments",
-                columns: table => new
-                {
-                    AppointmentId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DiagnosisICPC2DiagnosisId = table.Column<int>(type: "int", nullable: true),
-                    AppealReasonComment = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    InteractionClass = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Visiting = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    InteractionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ServiceComment = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Priority = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Treatment = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Appointments", x => x.AppointmentId);
-                    table.ForeignKey(
-                        name: "FK_Appointments_DiagnosesICPC2_DiagnosisICPC2DiagnosisId",
-                        column: x => x.DiagnosisICPC2DiagnosisId,
-                        principalTable: "DiagnosesICPC2",
-                        principalColumn: "DiagnosisId");
                 });
 
             migrationBuilder.CreateTable(
@@ -419,7 +411,8 @@ namespace DiplomaAPI.Migrations
                     DoctorId = table.Column<int>(type: "int", nullable: false),
                     PatientId = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Validity = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Validity = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProcessStatus = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -439,28 +432,45 @@ namespace DiplomaAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Services",
+                name: "AmbulatoryEpisodes",
                 columns: table => new
                 {
-                    ServiceId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ServiceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    AppointmentId = table.Column<int>(type: "int", nullable: true)
+                    EpisodeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DoctorId = table.Column<int>(type: "int", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    DiagnosisMKX10AMDiagnosisId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ReferralPackageId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Services", x => x.ServiceId);
+                    table.PrimaryKey("PK_AmbulatoryEpisodes", x => x.EpisodeId);
                     table.ForeignKey(
-                        name: "FK_Services_Appointments_AppointmentId",
-                        column: x => x.AppointmentId,
-                        principalTable: "Appointments",
-                        principalColumn: "AppointmentId");
+                        name: "FK_AmbulatoryEpisodes_DiagnosesMKX10AM_DiagnosisMKX10AMDiagnosisId",
+                        column: x => x.DiagnosisMKX10AMDiagnosisId,
+                        principalTable: "DiagnosesMKX10AM",
+                        principalColumn: "DiagnosisId");
                     table.ForeignKey(
-                        name: "FK_Services_ServiceCategories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "ServiceCategories",
-                        principalColumn: "CategoryId",
+                        name: "FK_AmbulatoryEpisodes_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AmbulatoryEpisodes_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "PatientId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AmbulatoryEpisodes_ReferralPackages_ReferralPackageId",
+                        column: x => x.ReferralPackageId,
+                        principalTable: "ReferralPackages",
+                        principalColumn: "ReferralPackageId");
                 });
 
             migrationBuilder.CreateTable(
@@ -492,21 +502,103 @@ namespace DiplomaAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DiagnosticReports",
+                columns: table => new
+                {
+                    ReportId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ServiceId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Conclusion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExecutantDoctorId = table.Column<int>(type: "int", nullable: false),
+                    InterpretedDoctorId = table.Column<int>(type: "int", nullable: false),
+                    AmbulatoryEpisodeEpisodeId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DiagnosticReports", x => x.ReportId);
+                    table.ForeignKey(
+                        name: "FK_DiagnosticReports_AmbulatoryEpisodes_AmbulatoryEpisodeEpisodeId",
+                        column: x => x.AmbulatoryEpisodeEpisodeId,
+                        principalTable: "AmbulatoryEpisodes",
+                        principalColumn: "EpisodeId");
+                    table.ForeignKey(
+                        name: "FK_DiagnosticReports_Doctors_ExecutantDoctorId",
+                        column: x => x.ExecutantDoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_DiagnosticReports_Doctors_InterpretedDoctorId",
+                        column: x => x.InterpretedDoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_DiagnosticReports_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "ServiceId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Appointments",
+                columns: table => new
+                {
+                    AppointmentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReferralId = table.Column<int>(type: "int", nullable: true),
+                    AppealReasonComment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InteractionClass = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Visiting = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InteractionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ServiceComment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Priority = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Treatment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AmbulatoryEpisodeEpisodeId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Appointments", x => x.AppointmentId);
+                    table.ForeignKey(
+                        name: "FK_Appointments_AmbulatoryEpisodes_AmbulatoryEpisodeEpisodeId",
+                        column: x => x.AmbulatoryEpisodeEpisodeId,
+                        principalTable: "AmbulatoryEpisodes",
+                        principalColumn: "EpisodeId");
+                    table.ForeignKey(
+                        name: "FK_Appointments_Referrals_ReferralId",
+                        column: x => x.ReferralId,
+                        principalTable: "Referrals",
+                        principalColumn: "ReferralId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Procedures",
                 columns: table => new
                 {
                     ProcedureId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ReferralId = table.Column<int>(type: "int", nullable: false),
+                    ReferralId = table.Column<int>(type: "int", nullable: true),
                     DoctorId = table.Column<int>(type: "int", nullable: false),
                     PatientId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProcedureName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EventDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AmbulatoryEpisodeEpisodeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Procedures", x => x.ProcedureId);
+                    table.ForeignKey(
+                        name: "FK_Procedures_AmbulatoryEpisodes_AmbulatoryEpisodeEpisodeId",
+                        column: x => x.AmbulatoryEpisodeEpisodeId,
+                        principalTable: "AmbulatoryEpisodes",
+                        principalColumn: "EpisodeId");
                     table.ForeignKey(
                         name: "FK_Procedures_Doctors_DoctorId",
                         column: x => x.DoctorId,
@@ -523,68 +615,56 @@ namespace DiplomaAPI.Migrations
                         name: "FK_Procedures_Referrals_ReferralId",
                         column: x => x.ReferralId,
                         principalTable: "Referrals",
-                        principalColumn: "ReferralId",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "ReferralId");
                 });
 
             migrationBuilder.CreateTable(
-                name: "AmbulatoryEpisodes",
+                name: "AppointmentsAndDiagnosesICPC2",
                 columns: table => new
                 {
-                    EpisodeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DoctorId = table.Column<int>(type: "int", nullable: false),
-                    PatientId = table.Column<int>(type: "int", nullable: false),
-                    AppointmentId = table.Column<int>(type: "int", nullable: true),
-                    DiagnosisMKX10AMDiagnosisId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ReferralPackageId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ProcedureId = table.Column<int>(type: "int", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    AppointmentId = table.Column<int>(type: "int", nullable: false),
+                    DiagnosisId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AmbulatoryEpisodes", x => x.EpisodeId);
+                    table.PrimaryKey("PK_AppointmentsAndDiagnosesICPC2", x => new { x.AppointmentId, x.DiagnosisId });
                     table.ForeignKey(
-                        name: "FK_AmbulatoryEpisodes_Appointments_AppointmentId",
+                        name: "FK_AppointmentsAndDiagnosesICPC2_Appointments_AppointmentId",
                         column: x => x.AppointmentId,
                         principalTable: "Appointments",
-                        principalColumn: "AppointmentId");
-                    table.ForeignKey(
-                        name: "FK_AmbulatoryEpisodes_DiagnosesMKX10AM_DiagnosisMKX10AMDiagnosisId",
-                        column: x => x.DiagnosisMKX10AMDiagnosisId,
-                        principalTable: "DiagnosesMKX10AM",
-                        principalColumn: "DiagnosisId");
-                    table.ForeignKey(
-                        name: "FK_AmbulatoryEpisodes_Doctors_DoctorId",
-                        column: x => x.DoctorId,
-                        principalTable: "Doctors",
-                        principalColumn: "Id",
+                        principalColumn: "AppointmentId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AmbulatoryEpisodes_Patients_PatientId",
-                        column: x => x.PatientId,
-                        principalTable: "Patients",
-                        principalColumn: "PatientId",
+                        name: "FK_AppointmentsAndDiagnosesICPC2_DiagnosesICPC2_DiagnosisId",
+                        column: x => x.DiagnosisId,
+                        principalTable: "DiagnosesICPC2",
+                        principalColumn: "DiagnosisId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AmbulatoryEpisodes_Procedures_ProcedureId",
-                        column: x => x.ProcedureId,
-                        principalTable: "Procedures",
-                        principalColumn: "ProcedureId");
-                    table.ForeignKey(
-                        name: "FK_AmbulatoryEpisodes_ReferralPackages_ReferralPackageId",
-                        column: x => x.ReferralPackageId,
-                        principalTable: "ReferralPackages",
-                        principalColumn: "ReferralPackageId");
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_AmbulatoryEpisodes_AppointmentId",
-                table: "AmbulatoryEpisodes",
-                column: "AppointmentId");
+            migrationBuilder.CreateTable(
+                name: "AppointmentsAndServices",
+                columns: table => new
+                {
+                    AppointmentId = table.Column<int>(type: "int", nullable: false),
+                    ServiceId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppointmentsAndServices", x => new { x.AppointmentId, x.ServiceId });
+                    table.ForeignKey(
+                        name: "FK_AppointmentsAndServices_Appointments_AppointmentId",
+                        column: x => x.AppointmentId,
+                        principalTable: "Appointments",
+                        principalColumn: "AppointmentId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AppointmentsAndServices_Services_ServiceId",
+                        column: x => x.ServiceId,
+                        principalTable: "Services",
+                        principalColumn: "ServiceId",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AmbulatoryEpisodes_DiagnosisMKX10AMDiagnosisId",
@@ -602,19 +682,29 @@ namespace DiplomaAPI.Migrations
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AmbulatoryEpisodes_ProcedureId",
-                table: "AmbulatoryEpisodes",
-                column: "ProcedureId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AmbulatoryEpisodes_ReferralPackageId",
                 table: "AmbulatoryEpisodes",
                 column: "ReferralPackageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointments_DiagnosisICPC2DiagnosisId",
+                name: "IX_Appointments_AmbulatoryEpisodeEpisodeId",
                 table: "Appointments",
-                column: "DiagnosisICPC2DiagnosisId");
+                column: "AmbulatoryEpisodeEpisodeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Appointments_ReferralId",
+                table: "Appointments",
+                column: "ReferralId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppointmentsAndDiagnosesICPC2_DiagnosisId",
+                table: "AppointmentsAndDiagnosesICPC2",
+                column: "DiagnosisId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppointmentsAndServices_ServiceId",
+                table: "AppointmentsAndServices",
+                column: "ServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -652,6 +742,26 @@ namespace DiplomaAPI.Migrations
                 name: "IX_DiagnosesMKX10AM_CategoryId",
                 table: "DiagnosesMKX10AM",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiagnosticReports_AmbulatoryEpisodeEpisodeId",
+                table: "DiagnosticReports",
+                column: "AmbulatoryEpisodeEpisodeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiagnosticReports_ExecutantDoctorId",
+                table: "DiagnosticReports",
+                column: "ExecutantDoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiagnosticReports_InterpretedDoctorId",
+                table: "DiagnosticReports",
+                column: "InterpretedDoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiagnosticReports_ServiceId",
+                table: "DiagnosticReports",
+                column: "ServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -696,6 +806,11 @@ namespace DiplomaAPI.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Procedures_AmbulatoryEpisodeEpisodeId",
+                table: "Procedures",
+                column: "AmbulatoryEpisodeEpisodeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Procedures_DoctorId",
                 table: "Procedures",
                 column: "DoctorId");
@@ -731,11 +846,6 @@ namespace DiplomaAPI.Migrations
                 column: "ServiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Services_AppointmentId",
-                table: "Services",
-                column: "AppointmentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Services_CategoryId",
                 table: "Services",
                 column: "CategoryId");
@@ -745,7 +855,10 @@ namespace DiplomaAPI.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AmbulatoryEpisodes");
+                name: "AppointmentsAndDiagnosesICPC2");
+
+            migrationBuilder.DropTable(
+                name: "AppointmentsAndServices");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -763,22 +876,34 @@ namespace DiplomaAPI.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "InstitutionsAndDepartments");
+                name: "DiagnosticReports");
 
             migrationBuilder.DropTable(
-                name: "DiagnosesMKX10AM");
+                name: "InstitutionsAndDepartments");
 
             migrationBuilder.DropTable(
                 name: "Procedures");
 
             migrationBuilder.DropTable(
+                name: "DiagnosesICPC2");
+
+            migrationBuilder.DropTable(
+                name: "Appointments");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "DiagnosesMKX10AMCategories");
+                name: "DiagnosesICPC2Categories");
+
+            migrationBuilder.DropTable(
+                name: "AmbulatoryEpisodes");
 
             migrationBuilder.DropTable(
                 name: "Referrals");
+
+            migrationBuilder.DropTable(
+                name: "DiagnosesMKX10AM");
 
             migrationBuilder.DropTable(
                 name: "ReferralPackages");
@@ -787,13 +912,13 @@ namespace DiplomaAPI.Migrations
                 name: "Services");
 
             migrationBuilder.DropTable(
+                name: "DiagnosesMKX10AMCategories");
+
+            migrationBuilder.DropTable(
                 name: "Doctors");
 
             migrationBuilder.DropTable(
                 name: "Patients");
-
-            migrationBuilder.DropTable(
-                name: "Appointments");
 
             migrationBuilder.DropTable(
                 name: "ServiceCategories");
@@ -811,13 +936,7 @@ namespace DiplomaAPI.Migrations
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "DiagnosesICPC2");
-
-            migrationBuilder.DropTable(
                 name: "Certificates");
-
-            migrationBuilder.DropTable(
-                name: "DiagnosesICPC2Categories");
         }
     }
 }
