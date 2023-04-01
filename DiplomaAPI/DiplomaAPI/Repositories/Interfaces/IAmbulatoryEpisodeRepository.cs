@@ -26,6 +26,10 @@ namespace DiplomaAPI.Repositories.Interfaces
 
         public AmbulatoryEpisodeViewModel CreateDiagnosticReport(int episodeId, CreateDiagnosticReportViewModel model);
 
+        public AmbulatoryEpisodeViewModel UpdateDiagnosticReport(int episodeId, UpdateDiagnosticReportViewModel model);
+
+        public AmbulatoryEpisodeViewModel DeleteDiagnosticReport(int episodeId, int reportId);
+
         public AmbulatoryEpisodeViewModel Delete(int id);
 
     }

@@ -106,6 +106,27 @@ namespace DiplomaAPI.Controllers
             }
         }
 
+        [HttpPut("UpdateDiagnosticReport")]
+        [ProducesResponseType(typeof(AmbulatoryEpisodeViewModel), 200)]
+        public async Task<IActionResult> Put(int episodeId, [FromBody] UpdateDiagnosticReportViewModel model)
+        {
+            return Ok(_episodeRepository.UpdateDiagnosticReport(episodeId, model));
+        }
+
+        [HttpDelete("DeleteDiagnosticReport")]
+        [ProducesResponseType(typeof(AmbulatoryEpisodeViewModel), 200)]
+        public async Task<IActionResult> Delete(int episodeId, int reportId)
+        {
+            try
+            {
+                return Ok(_episodeRepository.DeleteDiagnosticReport(episodeId, reportId));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(AmbulatoryEpisodeViewModel), 200)]
         public async Task<IActionResult> Put(int id, [FromBody] UpdateAmbulatoryEpisodeViewModel model)

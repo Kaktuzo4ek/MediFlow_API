@@ -194,6 +194,79 @@ namespace DiplomaAPI.Repositories
             return PrepareResponse(episode);
         }
 
+        public AmbulatoryEpisodeViewModel UpdateDiagnosticReport(int episodeId, UpdateDiagnosticReportViewModel model)
+        {
+            var episode = _data.AmbulatoryEpisodes.Find(episodeId);
+
+            _data.Entry(episode).Collection("DiagnosticReports").Load();
+
+            DiagnosticReport diagnosticReport = episode.DiagnosticReports.Where(x => x.ReportId == model.ReportId).ToList().ElementAt(0);
+
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            _data.Entry(diagnosticReport).Reference("Service").Load();
+            _data.Entry(diagnosticReport).Reference("ExecutantDoctor").Load();
+            _data.Entry(diagnosticReport).Reference("InterpretedDoctor").Load();
+
+
+            if (model.ServiceId != diagnosticReport.Service.ServiceId)
+            {
+                episode.DiagnosticReports.First(x => x.ReportId == model.ReportId).Service = _data.Services.Find(model.ServiceId);
+            }
+
+            if (model.Category != diagnosticReport.Category)
+            {
+                episode.DiagnosticReports.First(x => x.ReportId == model.ReportId).Category = model.Category;
+            }
+
+            if (model.Conclusion != diagnosticReport.Conclusion)
+            {
+                episode.DiagnosticReports.First(x => x.ReportId == model.ReportId).Conclusion = model.Conclusion;
+            }
+
+            if (model.ExecutantDoctorId != diagnosticReport.ExecutantDoctor.Id)
+            {
+                episode.DiagnosticReports.First(x => x.ReportId == model.ReportId).ExecutantDoctor = _data.Doctors.Find(model.ExecutantDoctorId);
+            }
+
+            if (model.InterpretedDoctorId != diagnosticReport.InterpretedDoctor.Id)
+            {
+                episode.DiagnosticReports.First(x => x.ReportId == model.ReportId).InterpretedDoctor = _data.Doctors.Find(model.InterpretedDoctorId);
+            }
+
+            _data.AmbulatoryEpisodes.Update(episode);
+            _data.SaveChanges();
+
+            return PrepareResponse(episode);
+        }
+
+        public AmbulatoryEpisodeViewModel DeleteDiagnosticReport(int episodeId, int reportId)
+        {
+            var episode = _data.AmbulatoryEpisodes.Find(episodeId);
+
+            _data.Entry(episode).Collection("DiagnosticReports").Load();
+
+            DiagnosticReport diagnosticReport = episode.DiagnosticReports.Where(x => x.ReportId == reportId).ToList().ElementAt(0);
+
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            _data.Entry(diagnosticReport).Reference("Service").Load();
+            _data.Entry(diagnosticReport).Reference("ExecutantDoctor").Load();
+            _data.Entry(diagnosticReport).Reference("InterpretedDoctor").Load();
+
+            episode.DiagnosticReports.Remove(diagnosticReport);
+
+            _data.AmbulatoryEpisodes.Update(episode);
+            _data.DiagnosticReports.Remove(diagnosticReport);
+            _data.SaveChanges();
+
+            return PrepareResponse(episode);
+        }
+
         public AmbulatoryEpisodeViewModel CreateProcedure(int episodeId, CreateProcedureViewModel model)
         {
             var episode = _data.AmbulatoryEpisodes.Find(episodeId);
