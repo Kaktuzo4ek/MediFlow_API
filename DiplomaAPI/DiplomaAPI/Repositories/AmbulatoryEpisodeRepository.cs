@@ -33,6 +33,8 @@ namespace DiplomaAPI.Repositories
                 _data.Entry(episode).Collection("Appointments").Load();
                 _data.Entry(episode).Reference("DiagnosisMKX10AM").Load();
                 _data.Entry(episode).Reference("ReferralPackage").Load();
+                if(episode.ReferralPackage != null)
+                    _data.Entry(episode.ReferralPackage).Collection("Referrals").Load();
                 _data.Entry(episode).Collection("Procedure").Load();
             });
 
@@ -47,6 +49,9 @@ namespace DiplomaAPI.Repositories
             episode.ForEach(epis =>
             {
                 _data.Entry(epis).Reference("Doctor").Load();
+                _data.Entry(epis).Reference("ReferralPackage").Load();
+                if (epis.ReferralPackage != null)
+                    _data.Entry(epis.ReferralPackage).Collection("Referrals").Load();
                 _data.Entry(epis.Doctor).Reference("Institution").Load();
                 _data.Entry(epis).Reference("Patient").Load();
                 _data.Entry(epis).Collection("Appointments").Load();
@@ -78,6 +83,8 @@ namespace DiplomaAPI.Repositories
                 }
                 _data.Entry(epis).Reference("DiagnosisMKX10AM").Load();
                 _data.Entry(epis).Reference("ReferralPackage").Load();
+                if (epis.ReferralPackage != null)
+                    _data.Entry(epis.ReferralPackage).Collection("Referrals").Load();
                 _data.Entry(epis).Collection("Procedure").Load();
             });
 
@@ -130,38 +137,63 @@ namespace DiplomaAPI.Repositories
             if (episode == null)
                 throw new NotFoundException();
 
-            var referralPackageId = GenerateReferralPackageNumber(16);
+            _data.Entry(episode).Reference("ReferralPackage").Load();
+            if (episode.ReferralPackage != null)
+                _data.Entry(episode.ReferralPackage).Collection("Referrals").Load();
 
-            while (_data.ReferralPackages.Find(referralPackageId) != null)
+            if (episode.ReferralPackage == null)
             {
-                referralPackageId = GenerateReferralPackageNumber(16);
-            }
+                var referralPackageId = GenerateReferralPackageNumber(16);
 
-            for (int i = 0; i < model.Services.Length; i++)
-            {
-                var service = _data.Services.Find(model.Services[i].ToString());
-
-                _data.Entry(service).Reference("Category").Load();
-
-                _data.Referrals.Add(new Referral
+                while (_data.ReferralPackages.Find(referralPackageId) != null)
                 {
+                    referralPackageId = GenerateReferralPackageNumber(16);
+                }
+
+                Collection<Referral> referrals = new Collection<Referral>();
+
+                referrals.Add(new Referral{
                     ReferralPackageId = referralPackageId,
-                    Service = service,
+                    Doctor = _data.Doctors.Find(model.DoctorId),
+                    Patient = _data.Patients.Find(model.PatientId),
+                    Date = DateTime.Now,
+                    Validity = DateTime.Now.AddYears(1),
+                    Service = _data.Services.Find(model.ServiceId),
                     Priority = model.Priority,
                     Status = "Активне",
-                    ProcessStatus = "Не погашене"
+                    ProcessStatus = "Не погашене",
+                    Category = model.Category,
+                    HospitalizationDepartment = _data.Departments.Find(model.HospitalizationDepartmentId)
+                });
+
+                episode.ReferralPackage = new ReferralPackage
+                {
+                    ReferralPackageId = referralPackageId,
+                    ProcessStatus = "Не погашений",
+                    Doctor = _data.Doctors.Find(model.DoctorId),
+                    Patient = _data.Patients.Find(model.PatientId),
+                    Date = DateTime.Now,
+                    Validity = DateTime.Now.AddYears(1),
+                    Referrals = referrals
+                };
+            }
+            else
+            {
+                episode.ReferralPackage.Referrals.Add(new Referral
+                {
+                    ReferralPackageId = episode.ReferralPackage.ReferralPackageId,
+                    Doctor = _data.Doctors.Find(model.DoctorId),
+                    Patient = _data.Patients.Find(model.PatientId),
+                    Date = DateTime.Now,
+                    Validity = DateTime.Now.AddYears(1),
+                    Service = _data.Services.Find(model.ServiceId),
+                    Priority = model.Priority,
+                    Status = "Активне",
+                    ProcessStatus = "Не погашене",
+                    Category = model.Category,
+                    HospitalizationDepartment = _data.Departments.Find(model.HospitalizationDepartmentId)
                 });
             }
-
-            episode.ReferralPackage = new ReferralPackage
-            {
-                ReferralPackageId = referralPackageId,
-                Doctor = _data.Doctors.Find(model.DoctorId),
-                Patient = _data.Patients.Find(model.PatientId),
-                Date = DateTime.Now,
-                Validity = DateTime.Now.AddYears(1),
-                ProcessStatus = "Не погашений"
-            };
 
             _data.AmbulatoryEpisodes.Update(episode);
             _data.SaveChanges();
@@ -181,6 +213,7 @@ namespace DiplomaAPI.Repositories
             episode.DiagnosticReports.Add(new DiagnosticReport
             {
                 Service = _data.Services.Find(model.ServiceId),
+                Patient = _data.Patients.Find(model.PatientId),
                 Category = model.Category,
                 Conclusion = model.Conclusion,
                 Date = DateTime.Now,
@@ -206,15 +239,9 @@ namespace DiplomaAPI.Repositories
             if (episode == null)
                 throw new NotFoundException();
 
-            _data.Entry(diagnosticReport).Reference("Service").Load();
             _data.Entry(diagnosticReport).Reference("ExecutantDoctor").Load();
             _data.Entry(diagnosticReport).Reference("InterpretedDoctor").Load();
 
-
-            if (model.ServiceId != diagnosticReport.Service.ServiceId)
-            {
-                episode.DiagnosticReports.First(x => x.ReportId == model.ReportId).Service = _data.Services.Find(model.ServiceId);
-            }
 
             if (model.Category != diagnosticReport.Category)
             {
@@ -300,6 +327,7 @@ namespace DiplomaAPI.Repositories
                 DateCreated = DateTime.Now,
                 ProcedureName = '(' + service.ServiceId + ") " + service.ServiceName,
                 Category = service.Category.CategoryName,
+                Notes = model.Notes,
             });
 
             var referral = _data.Referrals.Find(referralId);
@@ -375,6 +403,45 @@ namespace DiplomaAPI.Repositories
             _data.SaveChanges();
 
             return PrepareResponse(episode);
+        }
+
+        public async Task<UserManagerResponse> CompeleteEpisode(int episodeId)
+        {
+            var episode = _data.AmbulatoryEpisodes.Find(episodeId);
+
+            if (episode == null)
+                throw new NotFoundException();
+
+
+            var referrals = new List<Referral>();
+
+            _data.Entry(episode).Reference("ReferralPackage").Load();
+            if (episode.ReferralPackage != null)
+            {
+                _data.Entry(episode.ReferralPackage).Collection("Referrals").Load();
+                referrals = episode.ReferralPackage.Referrals.Where(x => x.ProcessStatus == "Не погашене").ToList();
+            }
+
+            if (referrals.Count() == 0)
+            {
+                episode.Status = "Завершений";
+                _data.AmbulatoryEpisodes.Update(episode);
+                _data.SaveChanges();
+            }
+            else
+            {
+                return new UserManagerResponse
+                {
+                    Message = "not completed referrals",
+                    IsSuccess = false
+                };
+            }
+
+            return new UserManagerResponse
+            {
+                Message = "Episode successfully completed",
+                IsSuccess = true
+            };
         }
 
         private AmbulatoryEpisodeViewModel PrepareResponse(AmbulatoryEpisode episode)

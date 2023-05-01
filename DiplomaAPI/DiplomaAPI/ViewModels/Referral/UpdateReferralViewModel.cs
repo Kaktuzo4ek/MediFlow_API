@@ -1,11 +1,22 @@
-﻿namespace DiplomaAPI.ViewModels.Referral
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace DiplomaAPI.ViewModels.Referral
 {
     public class UpdateReferralViewModel
     {
-        public int ReferralId { get; set; }
+        [AllowNull]
+        public int? ReferralId { get; set; }
 
-        public string Priority { get; set; }
+        [AllowNull]
+        public string? Priority { get; set; }
 
-        public string ServiceId { get; set; }
+        [AllowNull]
+        public string? ServiceId { get; set; }
+
+        [AllowNull]
+        public string? Category { get; set; }
+
+        [AllowNull]
+        public int? HospitalizationDepartmentId { get; set; }
     }
 }

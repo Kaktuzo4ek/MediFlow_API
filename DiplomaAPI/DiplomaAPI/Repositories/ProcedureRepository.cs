@@ -52,8 +52,11 @@ namespace DiplomaAPI.Repositories
             }
 
             _data.Entry(procedure).Reference("Referral").Load();
-            _data.Entry(procedure.Referral).Reference("Service").Load();
-            _data.Entry(procedure.Referral.Service).Reference("Category").Load();
+            if (procedure.Referral != null)
+            {
+                _data.Entry(procedure.Referral).Reference("Service").Load();
+                _data.Entry(procedure.Referral.Service).Reference("Category").Load();
+            }
             _data.Entry(procedure).Reference("Doctor").Load();
             _data.Entry(procedure.Doctor).Reference("Institution").Load();
             _data.Entry(procedure.Doctor).Reference("Department").Load();
@@ -90,6 +93,7 @@ namespace DiplomaAPI.Repositories
                 DateCreated = DateTime.Now,
                 ProcedureName = '(' + service.ServiceId + ") " + service.ServiceName,
                 Category = service.Category.CategoryName,
+                Notes = data.Notes, 
             };
 
             var referral = _data.Referrals.Find(referralId);
@@ -152,6 +156,11 @@ namespace DiplomaAPI.Repositories
             {
                 procedure.ProcedureName = '(' + service.ServiceId + ") " + service.ServiceName;
                 procedure.Category = service.Category.CategoryName;
+            }
+
+            if(data.Notes != data.Notes) 
+            {
+                procedure.Notes = data.Notes;
             }
 
             _data.Procedures.Update(procedure);

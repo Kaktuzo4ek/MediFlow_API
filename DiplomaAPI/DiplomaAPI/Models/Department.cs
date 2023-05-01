@@ -6,6 +6,6 @@
 
         public string Name { get; set; }
 
-        public ICollection<InstitutionAndDepartment> InstitutionsAndDepartments { get; set; }
+        //public ICollection<InstitutionAndDepartment> InstitutionsAndDepartments { get; set; }
     }
 }

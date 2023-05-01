@@ -12,6 +12,8 @@
 
         public string Status { get; set; }
 
+        public string Notes { get; set; }
+
         public DateTime EventDate { get; set; }
 
         public DateTime DateCreated { get; set; }

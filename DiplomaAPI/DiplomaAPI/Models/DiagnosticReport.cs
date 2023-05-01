@@ -7,7 +7,11 @@ namespace DiplomaAPI.Models
         [Key]
         public int ReportId { get; set; }
 
+        public Models.Patient Patient { get; set; }
+
         public Models.Service Service { get; set; }
+
+        public Models.Referral? Referral { get; set; }
 
         public string Category { get; set; }
 

@@ -74,5 +74,7 @@ namespace DiplomaAPI.Data
         public DbSet<DiagnosticReport> DiagnosticReports { get; set; }
 
         public DbSet<AppointmentAndDiagnosisICPC2> AppointmentsAndDiagnosesICPC2 { get; set; }
+
+        public DbSet<InpatientEpisode> InpatientEpisodes { get; set;}
     }
 }

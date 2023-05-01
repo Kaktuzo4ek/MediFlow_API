@@ -1,4 +1,5 @@
 ﻿using DiplomaAPI.Models;
+using DiplomaAPI.ViewModels;
 using DiplomaAPI.ViewModels.AmbulatoryEpisode;
 using DiplomaAPI.ViewModels.AmbulatoryEpisode.Appointment;
 using DiplomaAPI.ViewModels.AmbulatoryEpisode.DiagnosisReport;
@@ -31,6 +32,8 @@ namespace DiplomaAPI.Repositories.Interfaces
         public AmbulatoryEpisodeViewModel DeleteDiagnosticReport(int episodeId, int reportId);
 
         public AmbulatoryEpisodeViewModel Delete(int id);
+
+        Task<UserManagerResponse> CompeleteEpisode(int episodeId);
 
     }
 }

@@ -33,6 +33,7 @@ namespace DiplomaAPI.Repositories
                 {
                     _data.Entry(service).Reference("Service").Load();
                     _data.Entry(service.Service).Reference("Category").Load();
+                    _data.Entry(service).Reference("HospitalizationDepartment").Load();
                 }
             });
             return referralPackages;
@@ -51,6 +52,7 @@ namespace DiplomaAPI.Repositories
                 {
                     _data.Entry(service).Reference("Service").Load();
                     _data.Entry(service.Service).Reference("Category").Load();
+                    _data.Entry(service).Reference("HospitalizationDepartment").Load();
                 }
             });
             return referralPackages;
@@ -80,6 +82,7 @@ namespace DiplomaAPI.Repositories
                     {
                         _data.Entry(service).Reference("Service").Load();
                         _data.Entry(service.Service).Reference("Category").Load();
+                        _data.Entry(service).Reference("HospitalizationDepartment").Load();
                     }
                 });
             }
@@ -92,12 +95,14 @@ namespace DiplomaAPI.Repositories
             referralPackages.ForEach(package =>
             {
                 _data.Entry(package).Reference("Doctor").Load();
+                _data.Entry(package.Doctor).Reference("Institution").Load();
                 _data.Entry(package).Reference("Patient").Load();
                 _data.Entry(package).Collection("Referrals").Load();
                 foreach (var service in package.Referrals)
                 {
                     _data.Entry(service).Reference("Service").Load();
                     _data.Entry(service.Service).Reference("Category").Load();
+                    _data.Entry(service).Reference("HospitalizationDepartment").Load();
                 }
             });
             return referralPackages;
@@ -131,7 +136,7 @@ namespace DiplomaAPI.Repositories
                 referralPackageId = GenerateReferralPackageNumber(16);
             }
 
-            for (int i = 0; i < data.Services.Length; i++)
+            /*for (int i = 0; i < data.Services.Length; i++)
             {
                 var service = _data.Services.Find(data.Services[i].ToString());
 
@@ -145,7 +150,7 @@ namespace DiplomaAPI.Repositories
                     Status = "Активне",
                     ProcessStatus = "Не погашене"
                 });
-            }
+            }*/
 
             var referralPackage = new ReferralPackage
             {

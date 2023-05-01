@@ -1,4 +1,5 @@
 ﻿using DiplomaAPI.Models;
+using DiplomaAPI.ViewModels;
 using DiplomaAPI.ViewModels.AmbulatoryEpisode.Appointment;
 
 namespace DiplomaAPI.Repositories.Interfaces
@@ -9,8 +10,10 @@ namespace DiplomaAPI.Repositories.Interfaces
 
         public List<Appointment> GetAllAppointments(int episodeId);
 
-        public AppointmentViewModel CreateAppointment(CreateAppointmentViewModel model);
+        Task<UserManagerResponse> CreateAppointment(CreateAppointmentViewModel model);
 
-        public AppointmentViewModel Update(UpdateAppointmentViewModel model);
+        public AppointmentViewModel Update(int episodeId, UpdateAppointmentViewModel model);
+
+        public AppointmentViewModel Delete(int episodeId, int appointmentId);
     }
 }

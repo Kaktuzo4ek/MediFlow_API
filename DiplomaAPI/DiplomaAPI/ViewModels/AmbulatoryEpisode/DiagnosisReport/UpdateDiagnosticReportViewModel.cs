@@ -4,8 +4,6 @@
     {
         public int ReportId { get; set; }
 
-        public string ServiceId { get; set; }
-
         public string Category { get; set; }
 
         public string Conclusion { get; set; }

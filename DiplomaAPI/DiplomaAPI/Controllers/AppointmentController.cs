@@ -1,6 +1,7 @@
 ﻿using DiplomaAPI.Models;
 using DiplomaAPI.Repositories;
 using DiplomaAPI.Repositories.Interfaces;
+using DiplomaAPI.ViewModels.AmbulatoryEpisode;
 using DiplomaAPI.ViewModels.AmbulatoryEpisode.Appointment;
 using DiplomaAPI.ViewModels.Procedure;
 using Microsoft.AspNetCore.Http;
@@ -64,9 +65,21 @@ namespace DiplomaAPI.Controllers
         [ProducesResponseType(typeof(AppointmentViewModel), 200)]
         public async Task<IActionResult> Put(int id, [FromBody] UpdateAppointmentViewModel model)
         {
-            model.AppointmentId = id;
+            return Ok(_appointmentRepository.Update(id, model));
+        }
 
-            return Ok(_appointmentRepository.Update(model));
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(AmbulatoryEpisodeViewModel), 200)]
+        public async Task<IActionResult> Delete(int id, int episodeId)
+        {
+            try
+            {
+                return Ok(_appointmentRepository.Delete(episodeId, id));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
         }
     }
 }

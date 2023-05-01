@@ -4,6 +4,8 @@
     {
         public int ReportId { get; set; }
 
+        public Models.Patient Patient { get; set; }
+
         public Models.Service Service { get; set; }
 
         public string Category { get; set; }

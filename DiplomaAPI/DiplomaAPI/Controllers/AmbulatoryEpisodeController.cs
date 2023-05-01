@@ -156,5 +156,18 @@ namespace DiplomaAPI.Controllers
                 return StatusCode(403);
             }
         }
+
+        [HttpPost("CompleteEpisode")]
+        public async Task<IActionResult> CompleteEpisode(int episodeId)
+        {
+            try
+            {
+                return Ok(_episodeRepository.CompeleteEpisode(episodeId));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
     }
 }

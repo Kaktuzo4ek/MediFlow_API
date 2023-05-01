@@ -46,5 +46,18 @@ namespace DiplomaAPI.Controllers
                 return StatusCode(403);
             }
         }
+
+        [HttpPost("GetDepartmentsByInstitutionId")]
+        public async Task<ActionResult<IEnumerable<Department>>> GetDepartmentsByInstitutionId(int id)
+        {
+            try
+            {
+                return _departmentRepository.getDepartmentsByInstitution(id);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
     }
 }

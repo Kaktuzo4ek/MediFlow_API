@@ -4,38 +4,34 @@ namespace DiplomaAPI.ViewModels.AmbulatoryEpisode.Appointment
 {
     public class UpdateAppointmentViewModel
     {
+        public int AppointmentId { get; set; }
+
         [AllowNull]
         public string? ReferralId { get; set; }
 
         [AllowNull]
-        public int? AppointmentId { get; set; }
-
-        [AllowNull]
-        public int[] DiagnosesICPC2 { get; set; }
-
-        [AllowNull]
-        public int AmbulatoryEpisodeId { get; set; }
+        public int[]? DiagnosesICPC2 { get; set; }
 
         [AllowNull]
         public string? AppealReasonComment { get; set; }
 
         [AllowNull]
-        public string InteractionClass { get; set; }
+        public string? InteractionClass { get; set; }
 
         [AllowNull]
-        public string Visiting { get; set; }
+        public string? Visiting { get; set; }
 
         [AllowNull]
-        public string InteractionType { get; set; }
+        public string? InteractionType { get; set; }
 
         [AllowNull]
-        public string[] Services { get; set; }
+        public string[]? Services { get; set; }
 
         [AllowNull]
         public string? ServiceComment { get; set; }
 
         [AllowNull]
-        public string Priority { get; set; }
+        public string? Priority { get; set; }
 
         [AllowNull]
         public string? Treatment { get; set; }

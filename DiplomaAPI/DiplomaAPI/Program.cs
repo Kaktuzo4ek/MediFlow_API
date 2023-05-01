@@ -42,6 +42,7 @@ builder.Services.AddScoped<IDiagnosisICPC2Repository, DiagnosisICPC2Repository>(
 builder.Services.AddScoped<IDiagnosisMKX10AMRepository, DiagnosisMKX10AMRepository>();
 builder.Services.AddScoped<IAmbulatoryEpisodeRepository, AmbulatoryEpisodeRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IDiagnosticReportRepository, DiagnosticReportRepisitory>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddTransient<IMailService, MailService>();

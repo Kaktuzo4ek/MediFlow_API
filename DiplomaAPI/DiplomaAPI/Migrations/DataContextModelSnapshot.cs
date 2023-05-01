@@ -87,6 +87,9 @@ namespace DiplomaAPI.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("InpatientEpisodeEpisodeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("InteractionClass")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -118,6 +121,8 @@ namespace DiplomaAPI.Migrations
                     b.HasKey("AppointmentId");
 
                     b.HasIndex("AmbulatoryEpisodeEpisodeId");
+
+                    b.HasIndex("InpatientEpisodeEpisodeId");
 
                     b.HasIndex("ReferralId");
 
@@ -292,7 +297,16 @@ namespace DiplomaAPI.Migrations
                     b.Property<int>("ExecutantDoctorId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("InpatientEpisodeEpisodeId")
+                        .HasColumnType("int");
+
                     b.Property<int>("InterpretedDoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReferralId")
                         .HasColumnType("int");
 
                     b.Property<string>("ServiceId")
@@ -304,7 +318,13 @@ namespace DiplomaAPI.Migrations
 
                     b.HasIndex("ExecutantDoctorId");
 
+                    b.HasIndex("InpatientEpisodeEpisodeId");
+
                     b.HasIndex("InterpretedDoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("ReferralId");
 
                     b.HasIndex("ServiceId");
 
@@ -422,6 +442,82 @@ namespace DiplomaAPI.Migrations
                     b.ToTable("Doctors", (string)null);
                 });
 
+            modelBuilder.Entity("DiplomaAPI.Models.InpatientEpisode", b =>
+                {
+                    b.Property<int>("EpisodeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EpisodeId"));
+
+                    b.Property<string>("BedType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BenefitCategory")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DiagnosisMKX10AMDiagnosisId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HospitalizationType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InstitutionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PatientStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReceiptDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReferralPackageId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("EpisodeId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("DiagnosisMKX10AMDiagnosisId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("InstitutionId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("ReferralPackageId");
+
+                    b.ToTable("InpatientEpisodes");
+                });
+
             modelBuilder.Entity("DiplomaAPI.Models.Institution", b =>
                 {
                     b.Property<int>("InstitutionId")
@@ -471,12 +567,23 @@ namespace DiplomaAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientId"));
 
+                    b.Property<string>("Adress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -487,7 +594,6 @@ namespace DiplomaAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
@@ -540,6 +646,12 @@ namespace DiplomaAPI.Migrations
                     b.Property<DateTime>("EventDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("InpatientEpisodeEpisodeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
@@ -560,6 +672,8 @@ namespace DiplomaAPI.Migrations
 
                     b.HasIndex("DoctorId");
 
+                    b.HasIndex("InpatientEpisodeEpisodeId");
+
                     b.HasIndex("PatientId");
 
                     b.HasIndex("ReferralId");
@@ -574,6 +688,22 @@ namespace DiplomaAPI.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReferralId"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HospitalizationDepartmentDepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Priority")
                         .IsRequired()
@@ -594,7 +724,16 @@ namespace DiplomaAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("Validity")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("ReferralId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("HospitalizationDepartmentDepartmentId");
+
+                    b.HasIndex("PatientId");
 
                     b.HasIndex("ReferralPackageId");
 
@@ -856,6 +995,10 @@ namespace DiplomaAPI.Migrations
                         .WithMany("Appointments")
                         .HasForeignKey("AmbulatoryEpisodeEpisodeId");
 
+                    b.HasOne("DiplomaAPI.Models.InpatientEpisode", null)
+                        .WithMany("Appointments")
+                        .HasForeignKey("InpatientEpisodeEpisodeId");
+
                     b.HasOne("DiplomaAPI.Models.Referral", "Referral")
                         .WithMany()
                         .HasForeignKey("ReferralId");
@@ -935,11 +1078,25 @@ namespace DiplomaAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DiplomaAPI.Models.InpatientEpisode", null)
+                        .WithMany("DiagnosticReports")
+                        .HasForeignKey("InpatientEpisodeEpisodeId");
+
                     b.HasOne("DiplomaAPI.Models.Doctor", "InterpretedDoctor")
                         .WithMany()
                         .HasForeignKey("InterpretedDoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("DiplomaAPI.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DiplomaAPI.Models.Referral", "Referral")
+                        .WithMany()
+                        .HasForeignKey("ReferralId");
 
                     b.HasOne("DiplomaAPI.Models.Service", "Service")
                         .WithMany()
@@ -948,6 +1105,10 @@ namespace DiplomaAPI.Migrations
                     b.Navigation("ExecutantDoctor");
 
                     b.Navigation("InterpretedDoctor");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Referral");
 
                     b.Navigation("Service");
                 });
@@ -985,6 +1146,53 @@ namespace DiplomaAPI.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("DiplomaAPI.Models.InpatientEpisode", b =>
+                {
+                    b.HasOne("DiplomaAPI.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DiplomaAPI.Models.DiagnosisMKX10AM", "DiagnosisMKX10AM")
+                        .WithMany()
+                        .HasForeignKey("DiagnosisMKX10AMDiagnosisId");
+
+                    b.HasOne("DiplomaAPI.Models.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DiplomaAPI.Models.Institution", "Institution")
+                        .WithMany()
+                        .HasForeignKey("InstitutionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DiplomaAPI.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DiplomaAPI.Models.ReferralPackage", "ReferralPackage")
+                        .WithMany()
+                        .HasForeignKey("ReferralPackageId");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("DiagnosisMKX10AM");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Institution");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("ReferralPackage");
+                });
+
             modelBuilder.Entity("DiplomaAPI.Models.Institution", b =>
                 {
                     b.HasOne("DiplomaAPI.Models.Certificate", "Certificate")
@@ -999,7 +1207,7 @@ namespace DiplomaAPI.Migrations
             modelBuilder.Entity("DiplomaAPI.Models.InstitutionAndDepartment", b =>
                 {
                     b.HasOne("DiplomaAPI.Models.Department", "Department")
-                        .WithMany("InstitutionsAndDepartments")
+                        .WithMany()
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1027,6 +1235,10 @@ namespace DiplomaAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DiplomaAPI.Models.InpatientEpisode", null)
+                        .WithMany("Procedure")
+                        .HasForeignKey("InpatientEpisodeEpisodeId");
+
                     b.HasOne("DiplomaAPI.Models.Patient", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId")
@@ -1046,6 +1258,22 @@ namespace DiplomaAPI.Migrations
 
             modelBuilder.Entity("DiplomaAPI.Models.Referral", b =>
                 {
+                    b.HasOne("DiplomaAPI.Models.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DiplomaAPI.Models.Department", "HospitalizationDepartment")
+                        .WithMany()
+                        .HasForeignKey("HospitalizationDepartmentDepartmentId");
+
+                    b.HasOne("DiplomaAPI.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DiplomaAPI.Models.ReferralPackage", null)
                         .WithMany("Referrals")
                         .HasForeignKey("ReferralPackageId")
@@ -1055,6 +1283,12 @@ namespace DiplomaAPI.Migrations
                     b.HasOne("DiplomaAPI.Models.Service", "Service")
                         .WithMany()
                         .HasForeignKey("ServiceId");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("HospitalizationDepartment");
+
+                    b.Navigation("Patient");
 
                     b.Navigation("Service");
                 });
@@ -1156,14 +1390,18 @@ namespace DiplomaAPI.Migrations
                     b.Navigation("AppointmentsAndServices");
                 });
 
-            modelBuilder.Entity("DiplomaAPI.Models.Department", b =>
-                {
-                    b.Navigation("InstitutionsAndDepartments");
-                });
-
             modelBuilder.Entity("DiplomaAPI.Models.DiagnosisICPC2", b =>
                 {
                     b.Navigation("AppointmentsAndDiagnosesICPC2");
+                });
+
+            modelBuilder.Entity("DiplomaAPI.Models.InpatientEpisode", b =>
+                {
+                    b.Navigation("Appointments");
+
+                    b.Navigation("DiagnosticReports");
+
+                    b.Navigation("Procedure");
                 });
 
             modelBuilder.Entity("DiplomaAPI.Models.Institution", b =>

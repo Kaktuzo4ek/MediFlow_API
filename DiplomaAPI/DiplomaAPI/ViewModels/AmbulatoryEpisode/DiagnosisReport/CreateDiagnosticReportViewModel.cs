@@ -2,7 +2,11 @@
 {
     public class CreateDiagnosticReportViewModel
     {
+        public string ReferralPackageId { get; set; }
+
         public string ServiceId { get; set; }
+
+        public int PatientId { get; set; }
 
         public string Category { get; set; }
 

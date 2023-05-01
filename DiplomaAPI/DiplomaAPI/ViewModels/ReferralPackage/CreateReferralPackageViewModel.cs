@@ -11,6 +11,10 @@ namespace DiplomaAPI.ViewModels.ReferralPackage
 
         public string Priority { get; set; }
 
-        public string[] Services { get; set; }
+        public string ServiceId { get; set; }
+
+        public string Category { get; set; }
+
+        public int HospitalizationDepartmentId { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace DiplomaAPI.Models
 
         public ICollection<Procedure>? Procedure { get; set; }
 
-        public ICollection<DiagnosticReport> DiagnosticReports { get; set; }
+        public ICollection<DiagnosticReport>? DiagnosticReports { get; set; }
 
         public string Status { get; set; }
 
