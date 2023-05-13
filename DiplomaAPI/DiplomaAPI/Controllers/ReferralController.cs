@@ -67,5 +67,33 @@ namespace DiplomaAPI.Controllers
                 return StatusCode(403);
             }
         }
+
+        [HttpDelete("Ambulatory/{id}")]
+        [ProducesResponseType(typeof(ReferralViewModel), 200)]
+        public async Task<IActionResult> DeleteInAmbulatory(int referralId, string referralPackageId)
+        {
+            try
+            {
+                return Ok(_referralRepository.DeleteInAmbulatory(referralId, referralPackageId));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
+        [HttpDelete("Inpatient/{id}")]
+        [ProducesResponseType(typeof(ReferralViewModel), 200)]
+        public async Task<IActionResult> DeleteInInpatient(int referralId, string referralPackageId)
+        {
+            try
+            {
+                return Ok(_referralRepository.DeleteInInpatient(referralId, referralPackageId));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
     }
 }

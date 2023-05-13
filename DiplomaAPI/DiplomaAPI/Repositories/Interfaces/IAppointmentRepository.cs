@@ -8,12 +8,20 @@ namespace DiplomaAPI.Repositories.Interfaces
     {
         public Appointment GetAppointment(int id);
 
-        public List<Appointment> GetAllAppointments(int episodeId);
+        public List<Appointment> GetAllAppointmentsFromAmbulatory(int episodeId);
 
-        Task<UserManagerResponse> CreateAppointment(CreateAppointmentViewModel model);
+        Task<UserManagerResponse> CreateAppointmentInAmbulatory(CreateAppointmentViewModel model);
 
-        public AppointmentViewModel Update(int episodeId, UpdateAppointmentViewModel model);
+        public AppointmentViewModel UpdateInAmbulatory(int episodeId, UpdateAppointmentViewModel model);
 
-        public AppointmentViewModel Delete(int episodeId, int appointmentId);
+        public AppointmentViewModel DeleteInAmbulatory(int episodeId, int appointmentId);
+
+        public List<Appointment> GetAllAppointmentsFromInpatient(int episodeId);
+
+        Task<UserManagerResponse> CreateAppointmentInInpatient(CreateAppointmentViewModel model);
+
+        public AppointmentViewModel UpdateInInpatient(int episodeId, UpdateAppointmentViewModel model);
+
+        public AppointmentViewModel DeleteInInpatient(int episodeId, int appointmentId);
     }
 }

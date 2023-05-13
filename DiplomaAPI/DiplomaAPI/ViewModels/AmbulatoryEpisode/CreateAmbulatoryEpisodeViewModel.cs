@@ -8,7 +8,6 @@ namespace DiplomaAPI.ViewModels.AmbulatoryEpisode
 
         public int PatientId { get; set; }
 
-        [AllowNull]
         public string? DiagnosisId { get; set; }
 
         public string Name { get; set; }

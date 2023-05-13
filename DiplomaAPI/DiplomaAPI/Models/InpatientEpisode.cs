@@ -9,13 +9,15 @@ namespace DiplomaAPI.Models
 
         public DateTime ReceiptDate { get; set; }
 
-        public Models.Doctor Doctor { get; set; }
+        public Models.Doctor HospitalizationDoctor { get; set; }
+
+        public Models.Doctor? TreatingDoctor { get; set; }
 
         public Models.Patient Patient { get; set; }
 
         public string PatientStatus { get; set; }
 
-        public string HospitalizationType { get; set; }
+        public Models.MedicalCard MedicalCard { get; set; }
 
         public Models.Institution Institution { get; set; }
 
@@ -23,7 +25,7 @@ namespace DiplomaAPI.Models
 
         public string BedType { get; set; }
 
-        public string? BenefitCategory { get; set; }
+        public string BenefitCategory { get; set; }
 
         public ICollection<Appointment>? Appointments { get; set; }
 
@@ -37,7 +39,7 @@ namespace DiplomaAPI.Models
 
         public string Status { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         public string Type { get; set; }
 

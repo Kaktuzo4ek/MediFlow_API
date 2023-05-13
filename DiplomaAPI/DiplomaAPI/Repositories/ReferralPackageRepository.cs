@@ -58,9 +58,40 @@ namespace DiplomaAPI.Repositories
             return referralPackages;
         }
 
-        public List<ReferralPackage> GetByEpisodeId(int episodeId)
+        public List<ReferralPackage> GetByAmbulatoryEpisodeId(int episodeId)
         {
             var episode = _data.AmbulatoryEpisodes.Find(episodeId);
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            _data.Entry(episode).Reference("ReferralPackage").Load();
+
+            var referralPackages = new List<ReferralPackage>();
+
+            if (episode.ReferralPackage != null)
+            {
+                referralPackages = _data.ReferralPackages.Where(x => x.ReferralPackageId == episode.ReferralPackage.ReferralPackageId).ToList();
+
+                referralPackages.ForEach(package =>
+                {
+                    _data.Entry(package).Reference("Doctor").Load();
+                    _data.Entry(package).Reference("Patient").Load();
+                    _data.Entry(package).Collection("Referrals").Load();
+                    foreach (var service in package.Referrals)
+                    {
+                        _data.Entry(service).Reference("Service").Load();
+                        _data.Entry(service.Service).Reference("Category").Load();
+                        _data.Entry(service).Reference("HospitalizationDepartment").Load();
+                    }
+                });
+            }
+            return referralPackages;
+        }
+
+        public List<ReferralPackage> GetByInpatientEpisodeId(int episodeId)
+        {
+            var episode = _data.InpatientEpisodes.Find(episodeId);
 
             if (episode == null)
                 throw new NotFoundException();
@@ -135,22 +166,6 @@ namespace DiplomaAPI.Repositories
             {
                 referralPackageId = GenerateReferralPackageNumber(16);
             }
-
-            /*for (int i = 0; i < data.Services.Length; i++)
-            {
-                var service = _data.Services.Find(data.Services[i].ToString());
-
-                _data.Entry(service).Reference("Category").Load();
-
-                _data.Referrals.Add(new Referral
-                {
-                    ReferralPackageId = referralPackageId,
-                    Service = service,
-                    Priority = data.Priority,
-                    Status = "Активне",
-                    ProcessStatus = "Не погашене"
-                });
-            }*/
 
             var referralPackage = new ReferralPackage
             {

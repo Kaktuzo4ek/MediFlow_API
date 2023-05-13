@@ -26,16 +26,46 @@ namespace DiplomaAPI.Repositories
         {
             var episodes = _data.AmbulatoryEpisodes.Where(x => x.Patient.PatientId == patientId).ToList();
 
-            episodes.ForEach(episode =>
+            episodes.ForEach(epis =>
             {
-                _data.Entry(episode).Reference("Doctor").Load();
-                _data.Entry(episode).Reference("Patient").Load();
-                _data.Entry(episode).Collection("Appointments").Load();
-                _data.Entry(episode).Reference("DiagnosisMKX10AM").Load();
-                _data.Entry(episode).Reference("ReferralPackage").Load();
-                if(episode.ReferralPackage != null)
-                    _data.Entry(episode.ReferralPackage).Collection("Referrals").Load();
-                _data.Entry(episode).Collection("Procedure").Load();
+                _data.Entry(epis).Reference("Doctor").Load();
+                _data.Entry(epis).Reference("ReferralPackage").Load();
+                if (epis.ReferralPackage != null)
+                    _data.Entry(epis.ReferralPackage).Collection("Referrals").Load();
+                _data.Entry(epis.Doctor).Reference("Institution").Load();
+                _data.Entry(epis).Reference("Patient").Load();
+                _data.Entry(epis).Collection("Appointments").Load();
+                _data.Entry(epis).Collection("DiagnosticReports").Load();
+                foreach (var entry in epis.DiagnosticReports)
+                {
+                    _data.Entry(entry).Reference("Service").Load();
+                    if (entry.Service != null)
+                        _data.Entry(entry.Service).Reference("Category").Load();
+                    _data.Entry(entry).Reference("ExecutantDoctor").Load();
+                    _data.Entry(entry).Reference("InterpretedDoctor").Load();
+                }
+                foreach (var entry in epis.Appointments)
+                {
+                    _data.Entry(entry).Collection("AppointmentsAndDiagnosesICPC2").Load();
+                    foreach (var diagnoses in entry.AppointmentsAndDiagnosesICPC2)
+                    {
+                        _data.Entry(diagnoses).Reference("Appointment").Load();
+                        _data.Entry(diagnoses).Reference("DiagnosisICPC2").Load();
+                        //_data.Entry(diagnoses.DiagnosisICPC2.Category).Reference("Category").Load();
+                    }
+
+                    _data.Entry(entry).Collection("AppointmentsAndServices").Load();
+                    foreach (var appAndServ in entry.AppointmentsAndServices)
+                    {
+                        _data.Entry(appAndServ).Reference("Appointment").Load();
+                        _data.Entry(appAndServ).Reference("Service").Load();
+                    }
+                }
+                _data.Entry(epis).Reference("DiagnosisMKX10AM").Load();
+                _data.Entry(epis).Reference("ReferralPackage").Load();
+                if (epis.ReferralPackage != null)
+                    _data.Entry(epis.ReferralPackage).Collection("Referrals").Load();
+                _data.Entry(epis).Collection("Procedure").Load();
             });
 
             return episodes;

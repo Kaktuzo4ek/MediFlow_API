@@ -34,6 +34,5 @@ namespace DiplomaAPI.Repositories.Interfaces
         public AmbulatoryEpisodeViewModel Delete(int id);
 
         Task<UserManagerResponse> CompeleteEpisode(int episodeId);
-
     }
 }

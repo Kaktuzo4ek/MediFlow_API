@@ -11,6 +11,8 @@ namespace DiplomaAPI.ViewModels.AmbulatoryEpisode.Appointment
 
         public int AmbulatoryEpisodeId { get; set; }
 
+        public int DoctorId { get; set; }
+
         [AllowNull]
         public string? AppealReasonComment { get; set; }
 

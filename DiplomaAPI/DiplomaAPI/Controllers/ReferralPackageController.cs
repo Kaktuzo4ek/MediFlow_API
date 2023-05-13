@@ -48,12 +48,25 @@ namespace DiplomaAPI.Controllers
         }
 
 
-        [HttpPost("GetByEpisodeId")]
-        public async Task<ActionResult<IEnumerable<ReferralPackage>>> GetByEpisodeId(int episodeId)
+        [HttpPost("GetByAmbulatoryEpisodeId")]
+        public async Task<ActionResult<IEnumerable<ReferralPackage>>> GetByAmbulatoryEpisodeId(int episodeId)
         {
             try
             {
-                return _referralPackageRepository.GetByEpisodeId(episodeId);
+                return _referralPackageRepository.GetByAmbulatoryEpisodeId(episodeId);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
+        [HttpPost("GetByInpatientEpisodeId")]
+        public async Task<ActionResult<IEnumerable<ReferralPackage>>> GetByInpatientEpisodeId(int episodeId)
+        {
+            try
+            {
+                return _referralPackageRepository.GetByInpatientEpisodeId(episodeId);
             }
             catch (ForbiddenException)
             {

@@ -111,7 +111,9 @@ namespace DiplomaAPI.Repositories
         {
             var procedure = _data.Procedures.Find(data.ProcedureId);
             _data.Entry(procedure).Reference("Referral").Load();
-            _data.Entry(procedure.Referral).Reference("Service").Load();
+
+            if(procedure.Referral != null)
+                _data.Entry(procedure.Referral).Reference("Service").Load();
 
             var service = _data.Services.Find(data.ServiceId);
 
@@ -180,9 +182,14 @@ namespace DiplomaAPI.Repositories
                 throw new NotFoundException();
             }
 
-            var referral = _data.Referrals.Find(procedure.Referral.ReferralId);
+            if(procedure.Referral != null) 
+            {
+                var referral = _data.Referrals.Find(procedure.Referral.ReferralId);
 
-            referral.ProcessStatus = "Не погашене";
+                referral.ProcessStatus = "Не погашене";
+
+                _data.Referrals.Update(referral);
+            }
 
             _data.Procedures.Remove(procedure);
             _data.SaveChanges();

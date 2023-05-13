@@ -82,6 +82,64 @@ namespace DiplomaAPI.Repositories
         {
             var referral = _data.Referrals.Find(referralId);
 
+            if (referral == null)
+            {
+                throw new NotFoundException();
+            }
+
+            _data.Referrals.Remove(referral);
+            _data.SaveChanges();
+
+            if (_data.Referrals.Where(x => x.ReferralPackageId == referralPackageId).Count() == 0)
+            {
+                var referralPackage = _data.ReferralPackages.Find(referralPackageId);
+
+                var ambulatoryEpisodes = _data.AmbulatoryEpisodes.ToList();
+
+                ambulatoryEpisodes.ForEach(x =>
+                {
+                    _data.Entry(x).Reference("ReferralPackage").Load();
+                });
+
+                var tempEpisode = ambulatoryEpisodes.Where(x => x.ReferralPackage?.ReferralPackageId == referralPackageId).ToList();
+
+                AmbulatoryEpisode episode = null;
+
+                var inpatientEpisodes = _data.InpatientEpisodes.ToList();
+
+                inpatientEpisodes.ForEach(x =>
+                {
+                    _data.Entry(x).Reference("ReferralPackage").Load();
+                });
+
+                var tempEpisode2 = inpatientEpisodes.Where(x => x.ReferralPackage?.ReferralPackageId == referralPackageId).ToList();
+
+                InpatientEpisode episode2 = null;
+
+                if (tempEpisode.Count() != 0)
+                {
+                    episode = tempEpisode.ElementAt(0);
+                    episode.ReferralPackage = _data.ReferralPackages.Find("");
+                    _data.AmbulatoryEpisodes.Update(episode);
+                } else if (tempEpisode2.Count() != 0)
+                {
+                    episode2 = tempEpisode2.ElementAt(0);
+                    episode2.ReferralPackage = _data.ReferralPackages.Find("");
+                    _data.InpatientEpisodes.Update(episode2);
+                }
+
+                _data.ReferralPackages.Remove(referralPackage);
+            }
+
+            _data.SaveChanges();
+
+            return PrepareResponseDelete(referral);
+        }
+
+        public ReferralViewModel DeleteInAmbulatory(int referralId, string referralPackageId)
+        {
+            var referral = _data.Referrals.Find(referralId);
+
             if(referral == null)
             {
                 throw new NotFoundException();
@@ -93,7 +151,6 @@ namespace DiplomaAPI.Repositories
             if(_data.Referrals.Where(x => x.ReferralPackageId == referralPackageId).Count() == 0)
             {
                 var referralPackage = _data.ReferralPackages.Find(referralPackageId);
-                _data.ReferralPackages.Remove(referralPackage);
 
                 var episodes = _data.AmbulatoryEpisodes.ToList();
 
@@ -106,7 +163,46 @@ namespace DiplomaAPI.Repositories
 
                 episode.ReferralPackage = _data.ReferralPackages.Find("");
 
+                _data.ReferralPackages.Remove(referralPackage);
+
                 _data.AmbulatoryEpisodes.Update(episode);
+            }
+
+            _data.SaveChanges();
+
+            return PrepareResponseDelete(referral);
+        }
+
+        public ReferralViewModel DeleteInInpatient(int referralId, string referralPackageId)
+        {
+            var referral = _data.Referrals.Find(referralId);
+
+            if (referral == null)
+            {
+                throw new NotFoundException();
+            }
+
+            _data.Referrals.Remove(referral);
+            _data.SaveChanges();
+
+            if (_data.Referrals.Where(x => x.ReferralPackageId == referralPackageId).Count() == 0)
+            {
+                var referralPackage = _data.ReferralPackages.Find(referralPackageId);
+
+                var episodes = _data.InpatientEpisodes.ToList();
+
+                episodes.ForEach(x =>
+                {
+                    _data.Entry(x).Reference("ReferralPackage").Load();
+                });
+
+                var episode = episodes.Where(x => x.ReferralPackage.ReferralPackageId == referralPackageId).ToList().ElementAt(0);
+
+                episode.ReferralPackage = _data.ReferralPackages.Find("");
+
+                _data.ReferralPackages.Remove(referralPackage);
+
+                _data.InpatientEpisodes.Update(episode);
             }
 
             _data.SaveChanges();

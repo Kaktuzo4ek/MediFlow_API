@@ -14,6 +14,8 @@ namespace DiplomaAPI.Models
 
         public Models.Referral? Referral { get; set; }
 
+        public Models.Doctor Doctor { get; set; }
+
         public string? AppealReasonComment { get; set; }
 
         public string InteractionClass { get; set; }

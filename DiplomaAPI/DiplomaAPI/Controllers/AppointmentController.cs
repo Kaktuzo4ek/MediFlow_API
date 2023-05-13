@@ -34,12 +34,12 @@ namespace DiplomaAPI.Controllers
             }
         }
 
-        [HttpPost("GetAppointments")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointments(int episodeId)
+        [HttpPost("GetAppointmentsFromAmbulatory")]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsFromAmbulatory(int episodeId)
         {
             try
             {
-                return _appointmentRepository.GetAllAppointments(episodeId);
+                return _appointmentRepository.GetAllAppointmentsFromAmbulatory(episodeId);
             }
             catch (ForbiddenException)
             {
@@ -47,13 +47,13 @@ namespace DiplomaAPI.Controllers
             }
         }
 
-        [HttpPost("CreateAppointment")]
+        [HttpPost("CreateAppointmentInAmbulatory")]
         [ProducesResponseType(typeof(AppointmentViewModel), 200)]
-        public async Task<IActionResult> Post([FromBody] CreateAppointmentViewModel model)
+        public async Task<IActionResult> PostInAmbulatory([FromBody] CreateAppointmentViewModel model)
         {
             try
             {
-                return Ok(_appointmentRepository.CreateAppointment(model));
+                return Ok(_appointmentRepository.CreateAppointmentInAmbulatory(model));
             }
             catch (ForbiddenException)
             {
@@ -61,20 +61,68 @@ namespace DiplomaAPI.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("InAmbulatory/{id}")]
         [ProducesResponseType(typeof(AppointmentViewModel), 200)]
         public async Task<IActionResult> Put(int id, [FromBody] UpdateAppointmentViewModel model)
         {
-            return Ok(_appointmentRepository.Update(id, model));
+            return Ok(_appointmentRepository.UpdateInAmbulatory(id, model));
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("InAmbulatory/{id}")]
         [ProducesResponseType(typeof(AmbulatoryEpisodeViewModel), 200)]
-        public async Task<IActionResult> Delete(int id, int episodeId)
+        public async Task<IActionResult> DeleteInAmbulatory(int id, int episodeId)
         {
             try
             {
-                return Ok(_appointmentRepository.Delete(episodeId, id));
+                return Ok(_appointmentRepository.DeleteInAmbulatory(episodeId, id));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
+        [HttpPost("GetAppointmentsFromInpatient")]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsFromInpatient(int episodeId)
+        {
+            try
+            {
+                return _appointmentRepository.GetAllAppointmentsFromInpatient(episodeId);
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
+        [HttpPost("CreateAppointmentInInpatient")]
+        [ProducesResponseType(typeof(AppointmentViewModel), 200)]
+        public async Task<IActionResult> PostInInpatient([FromBody] CreateAppointmentViewModel model)
+        {
+            try
+            {
+                return Ok(_appointmentRepository.CreateAppointmentInInpatient(model));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
+        [HttpPut("InInpatient/{id}")]
+        [ProducesResponseType(typeof(AppointmentViewModel), 200)]
+        public async Task<IActionResult> PutInInpatient(int id, [FromBody] UpdateAppointmentViewModel model)
+        {
+            return Ok(_appointmentRepository.UpdateInInpatient(id, model));
+        }
+
+        [HttpDelete("InInpatient/{id}")]
+        [ProducesResponseType(typeof(AmbulatoryEpisodeViewModel), 200)]
+        public async Task<IActionResult> DeleteInInpatient(int id, int episodeId)
+        {
+            try
+            {
+                return Ok(_appointmentRepository.DeleteInInpatient(episodeId, id));
             }
             catch (ForbiddenException)
             {
