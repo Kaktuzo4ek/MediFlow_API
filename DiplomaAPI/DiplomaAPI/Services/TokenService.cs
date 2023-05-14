@@ -22,11 +22,17 @@ namespace DiplomaAPI.Services
         public JwtSecurityToken BuildToken(string key, string issuer, Doctor user)
         {
             user = _doctorRepository.LoadObjects(user);
+            var depName = "Головний лікар";
+            if (user.Department != null)
+            {
+                depName= user.Department.Name;
+            }
             var claims = new[] {
                 new Claim(ClaimTypes.Name, user.Id.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Institution.InstitutionId.ToString()),
                 new Claim(ClaimTypes.Email, user.Email.ToString()),
-                new Claim(ClaimTypes.Role, user.Role.RoleName.ToString())
+                new Claim(ClaimTypes.Role, user.Role.RoleName.ToString()),
+                new Claim(ClaimTypes.SerialNumber, depName),
             };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));

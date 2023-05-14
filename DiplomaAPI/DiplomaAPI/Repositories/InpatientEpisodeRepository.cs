@@ -10,6 +10,7 @@ using SendGrid.Helpers.Errors.Model;
 using System.Collections.ObjectModel;
 using DiplomaAPI.ViewModels.InpatientEpisode;
 using Microsoft.AspNet.Identity;
+using System.Numerics;
 
 namespace DiplomaAPI.Repositories
 {
@@ -23,12 +24,15 @@ namespace DiplomaAPI.Repositories
 
         public List<InpatientEpisode> GetAll()
         {
-            var episodes = _data.InpatientEpisodes.ToList();
+            var episodes = _data.InpatientEpisodes.Where(x => x.PatientStatus != "Відхилено").ToList();
 
             episodes.ForEach(epis =>
             {
                 _data.Entry(epis).Reference("HospitalizationDoctor").Load();
+                _data.Entry(epis.HospitalizationDoctor).Reference("Position").Load();
                 _data.Entry(epis).Reference("TreatingDoctor").Load();
+                if(epis.TreatingDoctor != null)
+                    _data.Entry(epis.TreatingDoctor).Reference("Position").Load();
                 _data.Entry(epis).Reference("Patient").Load();
                 _data.Entry(epis).Reference("MedicalCard").Load();
                 _data.Entry(epis).Reference("Institution").Load();
@@ -80,7 +84,10 @@ namespace DiplomaAPI.Repositories
             episodes.ForEach(epis =>
             {
                 _data.Entry(epis).Reference("HospitalizationDoctor").Load();
+                _data.Entry(epis.HospitalizationDoctor).Reference("Position").Load();
                 _data.Entry(epis).Reference("TreatingDoctor").Load();
+                if (epis.TreatingDoctor != null)
+                    _data.Entry(epis.TreatingDoctor).Reference("Position").Load();
                 _data.Entry(epis).Reference("Patient").Load();
                 _data.Entry(epis).Reference("MedicalCard").Load();
                 _data.Entry(epis).Reference("Institution").Load();
@@ -133,7 +140,10 @@ namespace DiplomaAPI.Repositories
             episode.ForEach(epis =>
             {
                 _data.Entry(epis).Reference("HospitalizationDoctor").Load();
+                _data.Entry(epis.HospitalizationDoctor).Reference("Position").Load();
                 _data.Entry(epis).Reference("TreatingDoctor").Load();
+                if (epis.TreatingDoctor != null)
+                    _data.Entry(epis.TreatingDoctor).Reference("Position").Load();
                 _data.Entry(epis).Reference("Patient").Load();
                 _data.Entry(epis).Reference("MedicalCard").Load();
                 _data.Entry(epis).Reference("Institution").Load();
@@ -192,7 +202,7 @@ namespace DiplomaAPI.Repositories
 
             var temp = _data.Referrals.Where(x => x.ReferralPackageId == model.ReferralPackageId && x.Category == "Госпіталізація").ToList();
 
-            var depName2 = (doctor.Department.Name.Replace("не", "ним") + 'м').ToLower();
+            var depName2 = doctor.Department.Name.ToLower();
 
             Referral referral = null;
             if (temp.Count != 0)
@@ -563,6 +573,8 @@ namespace DiplomaAPI.Repositories
                 episode.DiagnosisMKX10AM = _data.DiagnosesMKX10AM.Find(diagnosisId);
             }
 
+            episode.Name = '(' + episode.DiagnosisMKX10AM?.DiagnosisId + ')' + " " + episode.DiagnosisMKX10AM?.DiagnosisName;
+
             _data.InpatientEpisodes.Update(episode);
             _data.SaveChanges();
 
@@ -619,6 +631,71 @@ namespace DiplomaAPI.Repositories
                 Message = "Episode successfully completed",
                 IsSuccess = true
             };
+        }
+
+        public InpatientEpisodeViewModel SetTreatingDoctor(int episodeId, int doctorId)
+        {
+            var episode = _data.InpatientEpisodes.Find(episodeId);
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            episode.TreatingDoctor = _data.Doctors.Find(doctorId);
+            _data.InpatientEpisodes.Update(episode);
+            _data.SaveChanges();
+
+            return PrepareResponse(episode);
+        }
+
+        public InpatientEpisodeViewModel SubmitPatient(int episodeId)
+        {
+            var episode = _data.InpatientEpisodes.Find(episodeId);
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            episode.PatientStatus = "Прийнято";
+            _data.InpatientEpisodes.Update(episode);
+            _data.SaveChanges();
+
+            return PrepareResponse(episode);
+        }
+
+        public InpatientEpisodeViewModel DeclinePatient(int episodeId)
+        {
+            var episode = _data.InpatientEpisodes.Find(episodeId);
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            episode.PatientStatus = "Відхилено";
+            _data.InpatientEpisodes.Update(episode);
+            _data.SaveChanges();
+
+            return PrepareResponse(episode);
+        }
+
+        public InpatientEpisodeViewModel DirectPatient(int episodeId, int departmentId)
+        {
+            var episode = _data.InpatientEpisodes.Find(episodeId);
+
+            if (episode == null)
+                throw new NotFoundException();
+
+            _data.Entry(episode).Reference("Department").Load();
+
+            var department = _data.Departments.Find(departmentId);
+
+            var depName1 = episode.Department.Name.Replace("не", "ного").ToLower();
+
+            var depName2 = department?.Name.ToLower();
+
+            episode.PatientStatus = "Переведено з " + depName1 + " у " + depName2 + ", але ще не прийнято";
+            episode.Department = department;
+            _data.InpatientEpisodes.Update(episode);
+            _data.SaveChanges();
+
+            return PrepareResponse(episode);
         }
 
         private InpatientEpisodeViewModel PrepareResponse(InpatientEpisode episode)

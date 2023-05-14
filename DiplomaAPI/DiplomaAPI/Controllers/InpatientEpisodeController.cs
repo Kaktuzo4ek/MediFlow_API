@@ -181,5 +181,61 @@ namespace DiplomaAPI.Controllers
                 return StatusCode(403);
             }
         }
+
+        [HttpPost("SetTreatingDoctor")]
+        [ProducesResponseType(typeof(InpatientEpisodeViewModel), 200)]
+        public async Task<IActionResult> SetTreatingDoctor(int episodeId, int doctorId)
+        {
+            try
+            {
+                return Ok(_episodeRepository.SetTreatingDoctor(episodeId, doctorId));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
+        [HttpPost("SubmitPatient")]
+        [ProducesResponseType(typeof(InpatientEpisodeViewModel), 200)]
+        public async Task<IActionResult> SubmitPatient(int episodeId)
+        {
+            try
+            {
+                return Ok(_episodeRepository.SubmitPatient(episodeId));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
+        [HttpPost("DeclinePatient")]
+        [ProducesResponseType(typeof(InpatientEpisodeViewModel), 200)]
+        public async Task<IActionResult> DeclinePatient(int episodeId, int doctorId)
+        {
+            try
+            {
+                return Ok(_episodeRepository.DeclinePatient(episodeId));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
+
+        [HttpPost("DirectPatient")]
+        [ProducesResponseType(typeof(InpatientEpisodeViewModel), 200)]
+        public async Task<IActionResult> DirectPatient(int episodeId, int departmentId)
+        {
+            try
+            {
+                return Ok(_episodeRepository.DirectPatient(episodeId, departmentId));
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+        }
     }
 }

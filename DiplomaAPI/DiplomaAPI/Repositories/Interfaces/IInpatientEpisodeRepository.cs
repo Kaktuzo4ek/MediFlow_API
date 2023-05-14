@@ -35,5 +35,13 @@ namespace DiplomaAPI.Repositories.Interfaces
         public InpatientEpisodeViewModel Delete(int id);
 
         Task<UserManagerResponse> CompeleteEpisode(int episodeId);
+
+        public InpatientEpisodeViewModel SetTreatingDoctor(int episodeId, int doctorId);
+
+        public InpatientEpisodeViewModel SubmitPatient(int episodeId);
+
+        public InpatientEpisodeViewModel DeclinePatient(int episodeId);
+
+        public InpatientEpisodeViewModel DirectPatient(int episodeId, int departmentId);
     }
 }

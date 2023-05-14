@@ -416,6 +416,8 @@ namespace DiplomaAPI.Repositories
                 episode.DiagnosisMKX10AM = _data.DiagnosesMKX10AM.Find(diagnosisId);
             }
 
+            episode.Name = '(' + episode.DiagnosisMKX10AM?.DiagnosisId + ')' + " " + episode.DiagnosisMKX10AM?.DiagnosisName;
+
             _data.AmbulatoryEpisodes.Update(episode);
             _data.SaveChanges();
 
